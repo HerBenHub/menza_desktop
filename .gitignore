@@ -1,0 +1,27 @@
+# Visual Studio cache
+.vs/
+
+# Build output
+bin/
+obj/
+Debug/
+Release/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Backup and temporary files
+*.tmp
+*.log
+*.bak
+*.swp
+
+# Configuration overrides
+appsettings.*.local.json
+
+# NuGet packages
+packages/
+*.nupkg
