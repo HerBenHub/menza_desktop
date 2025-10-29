@@ -110,6 +110,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\CreateFoodRequest.cs" />
+    <Compile Include="Models\Food.cs" />
     <Compile Include="Services\api.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

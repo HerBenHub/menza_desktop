@@ -14,6 +14,15 @@
                  DisplayMemberPath="name"
                  HorizontalAlignment="Stretch"
                  VerticalAlignment="Stretch" Grid.Row="1"/>
+
+        <Button x:Name="AddFoodButton"
+                    Width="180"
+                    Height="40"
+                    Content="Új étel feltöltése"
+                    Background="#3A8DFF"
+                    Foreground="White"
+                    FontWeight="Bold"
+                    Click="AddFoodButton_Click" Margin="100,26,100,158" Grid.Row="1"/>
     </Grid>
 </Window>
 
