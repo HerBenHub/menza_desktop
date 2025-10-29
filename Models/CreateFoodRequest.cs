@@ -18,20 +18,14 @@ namespace menza_admin.Models
         [JsonPropertyName("pictureId")]
         public string PictureId { get; set; } = string.Empty;
 
-        [JsonIgnore]
-        public List<long> Allergens { get; set; } = new List<long>();
-
         [JsonPropertyName("allergens")]
-        public List<string> GetAllergensAsStrings
-        {
-            get { return Allergens.ConvertAll(a => a.ToString()); }
-            set { Allergens = value.ConvertAll(s => long.Parse(s)); }
-        }
+        public List<string> Allergens { get; set; } = new List<string>();
 
-        [JsonPropertyName("vatRate")]
-        public int VatRate { get; set; } = 27;
+        // New property to handle the image file
+        [JsonIgnore]
+        public byte[] ImageData { get; set; }
 
-        [JsonPropertyName("stripeTaxCode")]
-        public string StripeTaxCode { get; set; } = "txcd_99999999";
+        [JsonIgnore]
+        public string ImageFileName { get; set; }
     }
 }

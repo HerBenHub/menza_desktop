@@ -22,7 +22,7 @@
                     Background="#3A8DFF"
                     Foreground="White"
                     FontWeight="Bold"
-                    Click="AddFoodButton_Click" Margin="100,26,100,158" Grid.Row="1"/>
+                    Click="AddFoodButton_Click" Margin="100,0,100,188" Grid.Row="1"/>
     </Grid>
 </Window>
 
