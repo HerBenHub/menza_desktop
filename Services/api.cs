@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -92,6 +93,32 @@ namespace menza_admin.Services
             }
         }
 
+        public async Task<List<OrderSummary>> GetOrdersByWeekAsync(int year, int week, int? day = null)
+        {
+            var endpoint = $"/v1/order?year={year}&week={week}";
+            if (day.HasValue)
+            {
+                endpoint += $"&day={day.Value}";
+            }
+
+            var response = await _client.GetAsync(endpoint);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to get orders. Status: {response.StatusCode}, Response: {content}");
+            }
+
+            var orders = JsonSerializer.Deserialize<List<OrderSummary>>(content);
+            return orders ?? new List<OrderSummary>();
+        }
+
+        // Optional: Add an overload that takes a request object
+        public async Task<List<OrderSummary>> GetOrdersByWeekAsync(OrdersByWeekRequest request)
+        {
+            return await GetOrdersByWeekAsync(request.Year, request.Week, request.Day);
+        }
+
         public async Task<HttpResponseMessage> PostAsync(string endpoint, object data)
         {
             var json = JsonSerializer.Serialize(data);
@@ -122,5 +149,22 @@ namespace menza_admin.Services
                 disposed = true;
             }
         }
+
+        
     }
 }
+
+
+// Usage examples(GetOrdersByWeekAsync):
+
+//// Using individual parameters
+//var orders = await App.Api.GetOrdersByWeekAsync(2025, 45);
+
+//// Using request object
+//var request = new OrdersByWeekRequest 
+//{
+//    Year = 2025,
+//    Week = 45,
+//    Day = null  // Optional day filter
+//};
+//var orders = await App.Api.GetOrdersByWeekAsync(request);

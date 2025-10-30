@@ -112,6 +112,8 @@
     </ApplicationDefinition>
     <Compile Include="Models\CreateFoodRequest.cs" />
     <Compile Include="Models\Food.cs" />
+    <Compile Include="Models\OrdersByWeekRequest.cs" />
+    <Compile Include="Models\OrderSummary.cs" />
     <Compile Include="Services\Api.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
