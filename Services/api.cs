@@ -150,7 +150,40 @@ namespace menza_admin.Services
             }
         }
 
-        
+        public async Task<List<Menu>> GetMenuAsync(int week, int? year = null)
+        {
+            var endpoint = $"/v1/menu?week={week}";
+            if (year.HasValue)
+            {
+                endpoint += $"&year={year.Value}";
+            }
+
+            var response = await _client.GetAsync(endpoint);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to get menu. Status: {response.StatusCode}, Response: {content}");
+            }
+
+            var menu = JsonSerializer.Deserialize<List<Menu>>(content);
+            return menu ?? new List<Menu>();
+        }
+
+        //Create menu
+        public async Task<CreateMenuResponse> CreateMenuAsync(CreateMenuRequest request)
+        {
+            var response = await PostAsync("/v1/menu", request);
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to create menu. Status: {response.StatusCode}, Response: {content}");
+            }
+
+            var result = JsonSerializer.Deserialize<CreateMenuResponse>(content);
+            return result ?? throw new Exception("Failed to deserialize response");
+        }
     }
 }
 
@@ -168,3 +201,24 @@ namespace menza_admin.Services
 //    Day = null  // Optional day filter
 //};
 //var orders = await App.Api.GetOrdersByWeekAsync(request);
+
+
+
+
+//// Get menu for a specific week
+//var weeklyMenu = await App.Api.GetMenuAsync(45, 2025);
+
+//// Create a new menu
+//var createMenuRequest = new CreateMenuRequest
+//{
+//    Year = 2025,
+//    Week = 45,
+//    Days = new Dictionary<string, List<string>>
+//    {
+//        ["1"] = new List<string> { "foodId1", "foodId2", "foodId3" },
+//        ["2"] = new List<string> { "foodId4", "foodId5", "foodId6" },
+//        // ... other days
+//    }
+//};
+
+//var response = await App.Api.CreateMenuAsync(createMenuRequest);
