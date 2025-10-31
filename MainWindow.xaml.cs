@@ -19,11 +19,6 @@ namespace menza_admin
             MainFrame.Navigate(new Orders());
         }
 
-        private void NavigateMenus(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new ManageMenus());
-        }
-
         private void NavigateFoods(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new ManageFoods());

@@ -130,7 +130,8 @@ namespace menza_admin.Services
 
         public async Task<HttpResponseMessage> PostAsync(string endpoint, object data)
         {
-            var json = JsonSerializer.Serialize(data);
+            // 🔴 FIX: Use JsonOptions for consistent serialization
+            var json = JsonSerializer.Serialize(data, JsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             return await _client.PostAsync(endpoint, content);
         }
@@ -182,15 +183,39 @@ namespace menza_admin.Services
         //Create menu
         public async Task<CreateMenuResponse> CreateMenuAsync(CreateMenuRequest request)
         {
-            var response = await PostAsync("/v1/menu", request);
-            var content = await response.Content.ReadAsStringAsync();
+            // 🔴 Better: Serialize with JsonOptions explicitly
+            var json = JsonSerializer.Serialize(request, JsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PostAsync("/v1/menu", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Failed to create menu. Status: {response.StatusCode}, Response: {content}");
+                throw new Exception($"Failed to create menu. Status: {response.StatusCode}, Response: {responseContent}");
             }
 
-            var result = JsonSerializer.Deserialize<CreateMenuResponse>(content, JsonOptions);
+            var result = JsonSerializer.Deserialize<CreateMenuResponse>(responseContent, JsonOptions);
+            return result ?? throw new Exception("Failed to deserialize response");
+        }
+
+        //Update menu
+        public async Task<CreateMenuResponse> UpdateMenuAsync(CreateMenuRequest request)
+        {
+            var json = JsonSerializer.Serialize(request, JsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "/v1/menu")
+            {
+                Content = content
+            };
+            var response = await _client.SendAsync(requestMessage);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to update menu. Status: {response.StatusCode}, Response: {responseContent}");
+            }
+
+            var result = JsonSerializer.Deserialize<CreateMenuResponse>(responseContent, JsonOptions);
             return result ?? throw new Exception("Failed to deserialize response");
         }
 
@@ -288,9 +313,9 @@ namespace menza_admin.Services
 //// Using request object
 //var request = new OrdersByWeekRequest 
 //{
-//    Year = 2025,
-//    Week = 45,
-//    Day = null  // Optional day filter
+    // Year = 2025,
+    // Week = 45,
+    // Day = null  // Optional day filter
 //};
 //var orders = await App.Api.GetOrdersByWeekAsync(request);
 

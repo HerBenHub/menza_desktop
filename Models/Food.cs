@@ -1,10 +1,10 @@
-using System;
+ï»¿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace menza_admin.Models
 {
-    //Itt azok a mezõk vannak amelyek szükségesek egy új étel létrehozásához
+    //Itt azok a mezÅ‘k vannak amelyek szÃ¼ksÃ©gesek egy Ãºj Ã©tel lÃ©trehozÃ¡sÃ¡hoz
     public class Food
     {
         [JsonPropertyName("id")]
