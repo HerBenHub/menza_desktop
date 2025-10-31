@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using menza_admin.Models;
 
@@ -15,6 +16,14 @@ namespace menza_admin.Services
     {
         private readonly HttpClient _client;
         private bool disposed = false;
+
+        // Static JsonSerializerOptions with converters for all API calls
+        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString,
+            Converters = { new BigIntConverter(), new FlexibleDateTimeConverter() }
+        };
 
         public Api(string baseUrl)
         {
@@ -40,7 +49,7 @@ namespace menza_admin.Services
                 throw new Exception($"Failed to get food with ID {id}. Status: {response.StatusCode}, Response: {content}");
             }
 
-            var food = JsonSerializer.Deserialize<Food>(content);
+            var food = JsonSerializer.Deserialize<Food>(content, JsonOptions);
             return food ?? throw new Exception($"Food with ID {id} not found");
         }
 
@@ -74,7 +83,7 @@ namespace menza_admin.Services
                     throw new Exception($"Failed to create food. Status: {response.StatusCode}, Response: {responseContent}");
                 }
 
-                var food = JsonSerializer.Deserialize<Food>(responseContent);
+                var food = JsonSerializer.Deserialize<Food>(responseContent, JsonOptions);
                 return food ?? throw new Exception("Failed to deserialize response");
             }
         }
@@ -109,7 +118,7 @@ namespace menza_admin.Services
                 throw new Exception($"Failed to get orders. Status: {response.StatusCode}, Response: {content}");
             }
 
-            var orders = JsonSerializer.Deserialize<List<OrderSummary>>(content);
+            var orders = JsonSerializer.Deserialize<List<OrderSummary>>(content, JsonOptions);
             return orders ?? new List<OrderSummary>();
         }
 
@@ -166,7 +175,7 @@ namespace menza_admin.Services
                 throw new Exception($"Failed to get menu. Status: {response.StatusCode}, Response: {content}");
             }
 
-            var menu = JsonSerializer.Deserialize<List<Menu>>(content);
+            var menu = JsonSerializer.Deserialize<List<Menu>>(content, JsonOptions);
             return menu ?? new List<Menu>();
         }
 
@@ -181,8 +190,77 @@ namespace menza_admin.Services
                 throw new Exception($"Failed to create menu. Status: {response.StatusCode}, Response: {content}");
             }
 
-            var result = JsonSerializer.Deserialize<CreateMenuResponse>(content);
+            var result = JsonSerializer.Deserialize<CreateMenuResponse>(content, JsonOptions);
             return result ?? throw new Exception("Failed to deserialize response");
+        }
+    }
+
+    // Custom JSON converter to handle BigInt values from Node.js API
+    public class BigIntConverter : JsonConverter<long>
+    {
+        public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            if (reader.TokenType == JsonTokenType.String)
+            {
+                // Handle bigint as string (e.g., "123456789")
+                if (long.TryParse(reader.GetString(), out long result))
+                {
+                    return result;
+                }
+            }
+            else if (reader.TokenType == JsonTokenType.Number)
+            {
+                // Handle regular number
+                return reader.GetInt64();
+            }
+
+            throw new JsonException($"Unable to convert token type {reader.TokenType} to Int64");
+        }
+
+        public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue(value);
+        }
+    }
+
+    // Custom JSON converter to handle DateTime values from Node.js API
+    public class FlexibleDateTimeConverter : JsonConverter<DateTime>
+    {
+        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.String:
+                    var dateString = reader.GetString();
+                    if (DateTime.TryParse(dateString, System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.RoundtripKind, out DateTime stringResult))
+                    {
+                        return stringResult;
+                    }
+                    throw new JsonException($"Unable to parse DateTime from string: {dateString}");
+
+                case JsonTokenType.Number:
+                    // Handle Unix timestamp in milliseconds
+                    var timestamp = reader.GetInt64();
+                    
+                    // Check if it's in milliseconds (larger number) or seconds
+                    if (timestamp > 10000000000) // Timestamp is in milliseconds
+                    {
+                        return DateTimeOffset.FromUnixTimeMilliseconds(timestamp).DateTime;
+                    }
+                    else // Timestamp is in seconds
+                    {
+                        return DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime;
+                    }
+
+                default:
+                    throw new JsonException($"Unexpected token type {reader.TokenType} when parsing DateTime");
+            }
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString("O")); // ISO 8601 format
         }
     }
 }
@@ -204,7 +282,7 @@ namespace menza_admin.Services
 
 
 
-
+ 
 //// Get menu for a specific week
 //var weeklyMenu = await App.Api.GetMenuAsync(45, 2025);
 
