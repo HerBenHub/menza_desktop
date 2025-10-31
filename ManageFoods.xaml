@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:menza_admin"
       mc:Ignorable="d"
-      Title="ManageFoods" Height="1000" Width="1850">
+      Title="ManageFoods">
     <Grid Background="#F5F5F5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,16 +14,16 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="25">
-            <TextBlock Text="Ételek Kezelése" FontSize="36" FontWeight="Bold" Foreground="#333333"/>
-            <TextBlock Text="Adjon hozzá, szerkesszen és kezeljen ételeket" FontSize="16" Foreground="#666666" Margin="0,8,0,0"/>
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="20,15,20,10">
+            <TextBlock Text="Ételek Kezelése" FontSize="28" FontWeight="Bold" Foreground="#333333"/>
+            <TextBlock Text="Adjon hozzá, szerkesszen és kezeljen ételeket" FontSize="14" Foreground="#666666" Margin="0,5,0,0"/>
         </StackPanel>
 
         <!-- Main Content -->
-        <Grid Grid.Row="1" Margin="25,0,25,20">
+        <Grid Grid.Row="1" Margin="20,0,20,15">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="450"/>
-                <ColumnDefinition Width="*" MinWidth="500"/>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*" MinWidth="800"/>
             </Grid.ColumnDefinitions>
 
             <!-- Form Section -->
@@ -34,46 +34,46 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#2196F3" CornerRadius="8,8,0,0" Padding="15">
-                        <TextBlock Text="Új Étel Hozzáadása" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                    <Border Grid.Row="0" Background="#2196F3" CornerRadius="8,8,0,0" Padding="12">
+                        <TextBlock Text="Új Étel Hozzáadása" FontSize="16" FontWeight="Bold" Foreground="White"/>
                     </Border>
 
-                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="20">
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="15">
                         <StackPanel Orientation="Vertical">
                             <!-- Food Name -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,18">
-                                <TextBlock Text="Étel Neve" FontWeight="Bold" FontSize="14" Foreground="#333333" Margin="0,0,0,8"/>
-                                <TextBox x:Name="FoodNameTextBox" Height="45" Padding="12" FontSize="15" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Étel Neve" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <TextBox x:Name="FoodNameTextBox" Height="38" Padding="10" FontSize="13" BorderThickness="1" BorderBrush="#DDDDDD"/>
                             </StackPanel>
 
                             <!-- Description -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,18">
-                                <TextBlock Text="Leírás" FontWeight="Bold" FontSize="14" Foreground="#333333" Margin="0,0,0,8"/>
-                                <TextBox x:Name="DescriptionTextBox" Height="100" Padding="12" FontSize="15" BorderThickness="1" BorderBrush="#DDDDDD" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Leírás" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <TextBox x:Name="DescriptionTextBox" Height="80" Padding="10" FontSize="13" BorderThickness="1" BorderBrush="#DDDDDD" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
                             </StackPanel>
 
                             <!-- Price -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,18">
-                                <TextBlock Text="Ár (HUF)" FontWeight="Bold" FontSize="14" Foreground="#333333" Margin="0,0,0,8"/>
-                                <TextBox x:Name="PriceTextBox" Height="45" Padding="12" FontSize="15" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Ár (HUF)" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <TextBox x:Name="PriceTextBox" Height="38" Padding="10" FontSize="13" BorderThickness="1" BorderBrush="#DDDDDD"/>
                             </StackPanel>
 
                             <!-- Image Upload -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,18">
-                                <TextBlock Text="Kép" FontWeight="Bold" FontSize="14" Foreground="#333333" Margin="0,0,0,8"/>
-                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="15" Background="White">
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Kép" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="12" Background="White">
                                     <StackPanel>
                                         <!-- Image Preview -->
-                                        <Border x:Name="ImagePreviewBorder" Height="200" Background="#F5F5F5" 
+                                        <Border x:Name="ImagePreviewBorder" Height="150" Background="#F5F5F5" 
                                                 BorderThickness="2" BorderBrush="#E0E0E0" CornerRadius="4" 
-                                                Margin="0,0,0,15" Visibility="Collapsed">
+                                                Margin="0,0,0,10" Visibility="Collapsed">
                                             <Grid>
-                                                <Image x:Name="ImagePreview" Stretch="Uniform" Margin="10"/>
+                                                <Image x:Name="ImagePreview" Stretch="Uniform" Margin="8"/>
                                                 <Button x:Name="RemoveImageButton" Content="✕" 
-                                                        Width="32" Height="32" 
+                                                        Width="28" Height="28" 
                                                         HorizontalAlignment="Right" VerticalAlignment="Top" 
-                                                        Margin="8" Background="#F44336" Foreground="White"
-                                                        FontSize="16" FontWeight="Bold" Cursor="Hand"
+                                                        Margin="6" Background="#F44336" Foreground="White"
+                                                        FontSize="14" FontWeight="Bold" Cursor="Hand"
                                                         Click="RemoveImageButton_Click" BorderThickness="0">
                                                     <Button.Style>
                                                         <Style TargetType="Button">
@@ -81,7 +81,7 @@
                                                                 <Setter.Value>
                                                                     <ControlTemplate TargetType="Button">
                                                                         <Border Background="{TemplateBinding Background}" 
-                                                                                CornerRadius="16" BorderThickness="0">
+                                                                                CornerRadius="14" BorderThickness="0">
                                                                             <ContentPresenter HorizontalAlignment="Center" 
                                                                                               VerticalAlignment="Center"/>
                                                                         </Border>
@@ -100,9 +100,9 @@
                                         </Border>
                                         
                                         <!-- Upload Button -->
-                                        <Button x:Name="UploadImageButton" Height="45" 
+                                        <Button x:Name="UploadImageButton" Height="38" 
                                                 Background="#FF9800" Foreground="White" 
-                                                FontSize="14" FontWeight="SemiBold" 
+                                                FontSize="13" FontWeight="SemiBold" 
                                                 Content="📷 Kép Feltöltése" 
                                                 Cursor="Hand"
                                                 Click="UploadImageButton_Click" 
@@ -134,33 +134,33 @@
                                         </Button>
                                         
                                         <TextBlock x:Name="ImageFileNameText" Text="Nincs kiválasztott kép" 
-                                                   FontSize="12" Foreground="#757575" 
-                                                   Margin="0,8,0,0" TextAlignment="Center"/>
+                                                   FontSize="11" Foreground="#757575" 
+                                                   Margin="0,6,0,0" TextAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
                             <!-- Allergens -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,18">
-                                <TextBlock Text="Allergének" FontWeight="Bold" FontSize="14" Foreground="#333333" Margin="0,0,0,12"/>
-                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="15" Background="White">
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Allergének" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,8"/>
+                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="12" Background="White">
                                     <StackPanel>
-                                        <CheckBox x:Name="GlutenCheckBox" Content="Glutén" Margin="0,6,0,6" FontSize="15"/>
-                                        <CheckBox x:Name="DairyCheckBox" Content="Tejtermék" Margin="0,6,0,6" FontSize="15"/>
-                                        <CheckBox x:Name="NutsCheckBox" Content="Dió" Margin="0,6,0,6" FontSize="15"/>
-                                        <CheckBox x:Name="PeanutsCheckBox" Content="Mogyoró" Margin="0,6,0,6" FontSize="15"/>
-                                        <CheckBox x:Name="SesameCheckBox" Content="Szezám" Margin="0,6,0,6" FontSize="15"/>
-                                        <CheckBox x:Name="SoyCheckBox" Content="Szóya" Margin="0,6,0,6" FontSize="15"/>
-                                        <CheckBox x:Name="FishCheckBox" Content="Hal" Margin="0,6,0,6" FontSize="15"/>
-                                        <CheckBox x:Name="ShellfishCheckBox" Content="Rák" Margin="0,6,0,6" FontSize="15"/>
+                                        <CheckBox x:Name="GlutenCheckBox" Content="Glutén" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="DairyCheckBox" Content="Tejtermék" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="NutsCheckBox" Content="Dió" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="PeanutsCheckBox" Content="Mogyoró" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="SesameCheckBox" Content="Szezám" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="SoyCheckBox" Content="Szóya" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="FishCheckBox" Content="Hal" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="ShellfishCheckBox" Content="Rák" Margin="0,4,0,4" FontSize="13"/>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
                             <!-- Action Buttons -->
-                            <StackPanel Orientation="Horizontal" Margin="0,25,0,0">
-                                <Button x:Name="AddFoodButton" Height="50" Background="#2196F3" Foreground="White" FontSize="15" FontWeight="Bold" Content="Étel Hozzáadása" Cursor="Hand" HorizontalAlignment="Stretch" Margin="0,0,10,0"/>
-                                <Button x:Name="ClearButton" Height="50" Background="#9E9E9E" Foreground="White" FontSize="15" FontWeight="Bold" Content="Törlés" Cursor="Hand" HorizontalAlignment="Stretch"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                                <Button x:Name="AddFoodButton" Height="42" Background="#2196F3" Foreground="White" FontSize="13" FontWeight="Bold" Content="Étel Hozzáadása" Cursor="Hand" HorizontalAlignment="Stretch" Margin="0,0,8,0"/>
+                                <Button x:Name="ClearButton" Height="42" Background="#9E9E9E" Foreground="White" FontSize="13" FontWeight="Bold" Content="Törlés" Cursor="Hand" HorizontalAlignment="Stretch"/>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
@@ -175,25 +175,25 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#4CAF50" CornerRadius="8,8,0,0" Padding="15">
+                    <Border Grid.Row="0" Background="#4CAF50" CornerRadius="8,8,0,0" Padding="12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Ételek Listája" FontSize="18" FontWeight="Bold" Foreground="White"/>
-                            <TextBox Grid.Column="1" x:Name="SearchTextBox" Width="250" Height="35" Padding="10" FontSize="12" BorderThickness="0" Background="White" Foreground="#333333" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="0" Text="Ételek Listája" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                            <TextBox Grid.Column="1" x:Name="SearchTextBox" Width="200" Height="32" Padding="8" FontSize="12" BorderThickness="0" Background="White" Foreground="#333333" HorizontalAlignment="Right"/>
                         </Grid>
                     </Border>
 
                     <!-- Foods DataGrid -->
-                    <DataGrid Grid.Row="1" x:Name="FoodsDataGrid" Margin="15" 
+                    <DataGrid Grid.Row="1" x:Name="FoodsDataGrid" Margin="12" 
                               AutoGenerateColumns="False" 
                               CanUserAddRows="False" 
                               CanUserDeleteRows="False" 
                               BorderThickness="1" 
                               BorderBrush="#CCCCCC" 
-                              RowHeight="60" 
+                              RowHeight="55" 
                               HeadersVisibility="Column" 
                               GridLinesVisibility="All"
                               VerticalGridLinesBrush="#E0E0E0"
@@ -208,8 +208,8 @@
                                 <Setter Property="Background" Value="#F5F5F5"/>
                                 <Setter Property="Foreground" Value="#424242"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
-                                <Setter Property="FontSize" Value="15"/>
-                                <Setter Property="Padding" Value="14,12"/>
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="Padding" Value="10,10"/>
                                 <Setter Property="BorderThickness" Value="0,0,1,2"/>
                                 <Setter Property="BorderBrush" Value="#CCCCCC"/>
                                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
@@ -242,24 +242,24 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="120" IsReadOnly="True">
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="135" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
-                                        <Setter Property="Margin" Value="14,0,10,0"/>
-                                        <Setter Property="FontSize" Value="14"/>
+                                        <Setter Property="Margin" Value="10,0,8,0"/>
+                                        <Setter Property="FontSize" Value="11"/>
                                         <Setter Property="Foreground" Value="#757575"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             
                             <!-- Image Column -->
-                            <DataGridTemplateColumn Header="Kép" Width="90">
+                            <DataGridTemplateColumn Header="Kép" Width="85">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1" 
-                                                CornerRadius="4" Margin="8" Width="70" Height="50">
+                                                CornerRadius="4" Margin="8,5" Width="60" Height="45">
                                             <Image Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality">
                                                 <Image.Source>
                                                     <MultiBinding Mode="OneWay">
@@ -276,28 +276,29 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             
-                            <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="180" IsReadOnly="True">
+                            <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="145" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
-                                        <Setter Property="Margin" Value="14,0,10,0"/>
+                                        <Setter Property="Margin" Value="10,0,8,0"/>
                                         <Setter Property="FontWeight" Value="SemiBold"/>
-                                        <Setter Property="FontSize" Value="14"/>
+                                        <Setter Property="FontSize" Value="13"/>
                                         <Setter Property="Foreground" Value="#212121"/>
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTemplateColumn Header="Leírás" Width="*" MinWidth="250">
+                            <DataGridTemplateColumn Header="Leírás" Width="1.5*" MinWidth="250">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="DescriptionButton" 
                                                 Click="DescriptionButton_Click"
                                                 HorizontalAlignment="Stretch"
                                                 VerticalAlignment="Center"
-                                                Height="45"
-                                                Margin="10,7"
-                                                Padding="12,10"
+                                                Height="40"
+                                                Margin="6,5"
+                                                Padding="10,8"
                                                 Cursor="Hand"
                                                 Background="Transparent"
                                                 BorderBrush="#E0E0E0"
@@ -319,7 +320,7 @@
                                                                                VerticalAlignment="Center"
                                                                                HorizontalAlignment="Left"
                                                                                Foreground="#616161"
-                                                                               FontSize="14"/>
+                                                                               FontSize="12"/>
                                                                 </Border>
                                                             </ControlTemplate>
                                                         </Setter.Value>
@@ -339,54 +340,59 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Ár (HUF)" Binding="{Binding Price}" Width="90" IsReadOnly="True">
+                            <DataGridTextColumn Header="Ár (HUF)" Binding="{Binding Price}" Width="95" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="HorizontalAlignment" Value="Right"/>
-                                        <Setter Property="Margin" Value="10,0,14,0"/>
+                                        <Setter Property="Margin" Value="8,0,12,0"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
-                                        <Setter Property="FontSize" Value="15"/>
+                                        <Setter Property="FontSize" Value="13"/>
                                         <Setter Property="Foreground" Value="#2E7D32"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             
                             <!-- Allergens Column -->
-                            <DataGridTemplateColumn Header="Allergének" Width="170">
+                            <DataGridTemplateColumn Header="Allergének" Width="155">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ItemsControl ItemsSource="{Binding Allergens}" Margin="10,5">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <WrapPanel Orientation="Horizontal"/>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Border Background="#FFF3E0" BorderBrush="#FFB74D" BorderThickness="1" 
-                                                            CornerRadius="12" Padding="8,4" Margin="2">
-                                                        <TextBlock Text="{Binding Name}" FontSize="11" 
-                                                                   Foreground="#E65100" FontWeight="SemiBold"/>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                      HorizontalScrollBarVisibility="Disabled" 
+                                                      MaxHeight="50"
+                                                      Margin="2">
+                                            <ItemsControl ItemsSource="{Binding Allergens}" Margin="4,2">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="#FFF3E0" BorderBrush="#FFB74D" BorderThickness="1" 
+                                                                CornerRadius="10" Padding="6,3" Margin="2">
+                                                            <TextBlock Text="{Binding Name}" FontSize="10" 
+                                                                       Foreground="#E65100" FontWeight="SemiBold"/>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                             
-                            <DataGridTemplateColumn Header="Műveletek" Width="180">
+                            <DataGridTemplateColumn Header="Műveletek" Width="165">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                                             <Button x:Name="EditButton" 
-                                                    Width="90" Height="38" 
-                                                    FontSize="13" 
+                                                    Width="75" Height="34" 
+                                                    FontSize="12" 
                                                     FontWeight="SemiBold" 
-                                                    Content="Szerkesztés" 
+                                                    Content="Szerk." 
                                                     Cursor="Hand" 
-                                                    Margin="0,0,8,0"
+                                                    Margin="0,0,6,0"
                                                     BorderThickness="0"
                                                     Foreground="White">
                                                 <Button.Style>
@@ -415,8 +421,8 @@
                                                 </Button.Style>
                                             </Button>
                                             <Button x:Name="DeleteButton" 
-                                                    Width="80" Height="38" 
-                                                    FontSize="13" 
+                                                    Width="70" Height="34" 
+                                                    FontSize="12" 
                                                     FontWeight="SemiBold" 
                                                     Content="Törlés" 
                                                     Cursor="Hand"
@@ -461,7 +467,7 @@
         <!-- Description Panel (appears when clicking description) -->
         <Border Grid.Row="2" x:Name="DescriptionPanel" Background="White" 
                 BorderThickness="0,1,0,0" BorderBrush="#CCCCCC" 
-                Padding="25,20" Margin="25,0,25,25" CornerRadius="0,0,8,8"
+                Padding="20,15" Margin="20,0,20,15" CornerRadius="0,0,8,8"
                 Visibility="Collapsed">
             <Grid>
                 <Grid.RowDefinitions>
@@ -471,16 +477,16 @@
                 </Grid.RowDefinitions>
 
                 <!-- Header with Close Button -->
-                <Grid Grid.Row="0" Margin="0,0,0,15">
+                <Grid Grid.Row="0" Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" x:Name="DescriptionTitleTextBlock" 
-                               Text="Leírás" FontSize="20" FontWeight="Bold" 
+                               Text="Leírás" FontSize="18" FontWeight="Bold" 
                                Foreground="#333333" VerticalAlignment="Center"/>
                     <Button Grid.Column="1" x:Name="CloseDescriptionButton" 
-                            Width="32" Height="32" Content="✕" FontSize="16" 
+                            Width="28" Height="28" Content="✕" FontSize="14" 
                             Background="#F5F5F5" Foreground="#666666"
                             Click="CloseDescriptionButton_Click"
                             Cursor="Hand" BorderThickness="0">
@@ -509,16 +515,16 @@
                 </Grid>
 
                 <!-- Separator -->
-                <Border Grid.Row="1" Height="1" Background="#E0E0E0" Margin="0,0,0,15"/>
+                <Border Grid.Row="1" Height="1" Background="#E0E0E0" Margin="0,0,0,12"/>
 
                 <!-- Description Content -->
-                <ScrollViewer Grid.Row="2" MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer Grid.Row="2" MaxHeight="150" VerticalScrollBarVisibility="Auto">
                     <TextBlock x:Name="DescriptionContentTextBlock" 
-                               Text="" FontSize="15" 
+                               Text="" FontSize="14" 
                                Foreground="#424242" 
                                TextWrapping="Wrap"
-                               LineHeight="24"
-                               Padding="5"/>
+                               LineHeight="22"
+                               Padding="4"/>
                 </ScrollViewer>
             </Grid>
         </Border>
