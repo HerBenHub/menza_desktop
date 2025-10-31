@@ -182,7 +182,23 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0" Text="Ételek Listája" FontSize="16" FontWeight="Bold" Foreground="White"/>
-                            <TextBox Grid.Column="1" x:Name="SearchTextBox" Width="200" Height="32" Padding="8" FontSize="12" BorderThickness="0" Background="White" Foreground="#333333" HorizontalAlignment="Right"/>
+                            <Grid Grid.Column="1" HorizontalAlignment="Right">
+                                <TextBox x:Name="SearchTextBox" Width="200" Height="32" Padding="8" FontSize="12" 
+                                         BorderThickness="0" Background="White" Foreground="#333333"/>
+                                <TextBlock Text="🔍 Keresés..." FontSize="12" Foreground="#999999" 
+                                           IsHitTestVisible="False" VerticalAlignment="Center" Margin="10,0,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
                         </Grid>
                     </Border>
 

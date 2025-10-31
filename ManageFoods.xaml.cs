@@ -82,6 +82,7 @@ namespace menza_admin
     public partial class ManageFoods : Page
     {
         private ObservableCollection<Food> foodsList;
+        private ObservableCollection<Food> filteredFoodsList;
         private Dictionary<string, long> allergenMap; // Map allergen names to IDs
         private byte[] selectedImageData;
         private string selectedImageFileName;
@@ -114,13 +115,15 @@ namespace menza_admin
         private void InitializeData()
         {
             foodsList = new ObservableCollection<Food>();
-            FoodsDataGrid.ItemsSource = foodsList;
+            filteredFoodsList = new ObservableCollection<Food>();
+            FoodsDataGrid.ItemsSource = filteredFoodsList;
         }
 
         private void SetupEventHandlers()
         {
             AddFoodButton.Click += AddFoodButton_Click;
             ClearButton.Click += ClearButton_Click;
+            SearchTextBox.TextChanged += SearchTextBox_TextChanged;
         }
 
         private async void AddFoodButton_Click(object sender, RoutedEventArgs e)
@@ -258,6 +261,7 @@ namespace menza_admin
                         }
                         
                         foodsList.Add(createdFood);
+                        ApplySearchFilter(); // Refresh filtered list
                     }
                 }
 
@@ -323,6 +327,9 @@ namespace menza_admin
                     foodsList.Add(food);
                 }
                 
+                // Apply search filter to populate filtered list
+                ApplySearchFilter();
+                
                 // Force UI update to trigger image loading
                 await System.Windows.Threading.Dispatcher.CurrentDispatcher.InvokeAsync(() =>
                 {
@@ -365,8 +372,9 @@ namespace menza_admin
                     // Call API to delete the food
                     await App.Api.DeleteFoodAsync(food.Id);
 
-                    // Remove from local list
+                    // Remove from both lists
                     foodsList.Remove(food);
+                    filteredFoodsList.Remove(food);
 
                     MessageBox.Show($"Az étel '{food.Name}' sikeresen törölve!", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
@@ -466,6 +474,74 @@ namespace menza_admin
             ImagePreview.Source = null;
             ImagePreviewBorder.Visibility = Visibility.Collapsed;
             ImageFileNameText.Text = "Nincs kiválasztott kép";
+        }
+
+        private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            ApplySearchFilter();
+        }
+
+        private void ApplySearchFilter()
+        {
+            string searchText = SearchTextBox?.Text?.Trim().ToLower() ?? "";
+            
+            filteredFoodsList.Clear();
+            
+            if (string.IsNullOrWhiteSpace(searchText))
+            {
+                // No search text - show all foods
+                foreach (var food in foodsList)
+                {
+                    filteredFoodsList.Add(food);
+                }
+            }
+            else
+            {
+                // Filter foods by name, description, or allergens
+                foreach (var food in foodsList)
+                {
+                    bool matches = false;
+                    
+                    // Check if name contains search text
+                    if (food.Name?.ToLower().Contains(searchText) == true)
+                    {
+                        matches = true;
+                    }
+                    
+                    // Check if description contains search text
+                    if (!matches && food.Description?.ToLower().Contains(searchText) == true)
+                    {
+                        matches = true;
+                    }
+                    
+                    // Check if any allergen name contains search text
+                    if (!matches && food.Allergens != null)
+                    {
+                        foreach (var allergen in food.Allergens)
+                        {
+                            if (allergen.Name?.ToLower().Contains(searchText) == true)
+                            {
+                                matches = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Check if price matches (when searching for numbers)
+                    if (!matches && int.TryParse(searchText, out int searchPrice))
+                    {
+                        if (food.Price == searchPrice)
+                        {
+                            matches = true;
+                        }
+                    }
+                    
+                    if (matches)
+                    {
+                        filteredFoodsList.Add(food);
+                    }
+                }
+            }
         }
     }
 }
