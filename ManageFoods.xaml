@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:menza_admin"
       mc:Ignorable="d"
       Title="ManageFoods">
-    <Grid Background="#F5F5F5">
+    <Grid Background="#F5F7FA">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -14,8 +14,8 @@
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="20,15,20,10">
-            <TextBlock Text="Ételek Kezelése" FontSize="28" FontWeight="Bold" Foreground="#333333"/>
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="20,20,20,15">
+            <TextBlock Text="Ételek Kezelése" FontSize="32" FontWeight="Bold" Foreground="#333333"/>
             <TextBlock Text="Adjon hozzá, szerkesszen és kezeljen ételeket" FontSize="14" Foreground="#666666" Margin="0,5,0,0"/>
         </StackPanel>
 
@@ -34,7 +34,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#2196F3" CornerRadius="8,8,0,0" Padding="12">
+                    <Border Grid.Row="0" Background="#3A8DFF" CornerRadius="8,8,0,0" Padding="12">
                         <TextBlock Text="Új Étel Hozzáadása" FontSize="16" FontWeight="Bold" Foreground="White"/>
                     </Border>
 
@@ -101,7 +101,7 @@
                                         
                                         <!-- Upload Button -->
                                         <Button x:Name="UploadImageButton" Height="38" 
-                                                Background="#FF9800" Foreground="White" 
+                                                Background="#3A8DFF" Foreground="White" 
                                                 FontSize="13" FontWeight="SemiBold" 
                                                 Content="📷 Kép Feltöltése" 
                                                 Cursor="Hand"
@@ -109,7 +109,7 @@
                                                 BorderThickness="0">
                                             <Button.Style>
                                                 <Style TargetType="Button">
-                                                    <Setter Property="Background" Value="#FF9800"/>
+                                                    <Setter Property="Background" Value="#3A8DFF"/>
                                                     <Setter Property="Template">
                                                         <Setter.Value>
                                                             <ControlTemplate TargetType="Button">
@@ -123,10 +123,10 @@
                                                     </Setter>
                                                     <Style.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Background" Value="#F57C00"/>
+                                                            <Setter Property="Background" Value="#5AA3FF"/>
                                                         </Trigger>
                                                         <Trigger Property="IsPressed" Value="True">
-                                                            <Setter Property="Background" Value="#EF6C00"/>
+                                                            <Setter Property="Background" Value="#2E7DD6"/>
                                                         </Trigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -159,8 +159,54 @@
 
                             <!-- Action Buttons -->
                             <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
-                                <Button x:Name="AddFoodButton" Height="42" Background="#2196F3" Foreground="White" FontSize="13" FontWeight="Bold" Content="Étel Hozzáadása" Cursor="Hand" HorizontalAlignment="Stretch" Margin="0,0,8,0"/>
-                                <Button x:Name="ClearButton" Height="42" Background="#9E9E9E" Foreground="White" FontSize="13" FontWeight="Bold" Content="Törlés" Cursor="Hand" HorizontalAlignment="Stretch"/>
+                                <Button x:Name="AddFoodButton" Height="42" Width="150" Background="#3A8DFF" Foreground="White" FontSize="13" FontWeight="Bold" Content="Étel Hozzáadása" Cursor="Hand" Margin="0,0,8,0" BorderThickness="0">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#3A8DFF"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#5AA3FF"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#2E7DD6"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button x:Name="ClearButton" Height="42" Width="100" Background="#9E9E9E" Foreground="White" FontSize="13" FontWeight="Bold" Content="Törlés" Cursor="Hand" BorderThickness="0">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#9E9E9E"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#757575"/>
+                                                </Trigger>
+                                                <Trigger Property="IsPressed" Value="True">
+                                                    <Setter Property="Background" Value="#616161"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
@@ -175,7 +221,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#4CAF50" CornerRadius="8,8,0,0" Padding="12">
+                    <Border Grid.Row="0" Background="#3A8DFF" CornerRadius="8,8,0,0" Padding="12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -221,13 +267,13 @@
                               SelectionUnit="FullRow">
                         <DataGrid.ColumnHeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Background" Value="#F5F5F5"/>
-                                <Setter Property="Foreground" Value="#424242"/>
+                                <Setter Property="Background" Value="#3A8DFF"/>
+                                <Setter Property="Foreground" Value="White"/>
                                 <Setter Property="FontWeight" Value="Bold"/>
                                 <Setter Property="FontSize" Value="13"/>
                                 <Setter Property="Padding" Value="10,10"/>
-                                <Setter Property="BorderThickness" Value="0,0,1,2"/>
-                                <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                                <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                                <Setter Property="BorderBrush" Value="White"/>
                                 <Setter Property="HorizontalContentAlignment" Value="Left"/>
                                 <Setter Property="VerticalContentAlignment" Value="Center"/>
                             </Style>
@@ -343,11 +389,11 @@
                                                     </Setter>
                                                     <Style.Triggers>
                                                         <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Background" Value="#F5F5F5"/>
-                                                            <Setter Property="BorderBrush" Value="#2196F3"/>
+                                                            <Setter Property="Background" Value="#E3F2FD"/>
+                                                            <Setter Property="BorderBrush" Value="#3A8DFF"/>
                                                         </Trigger>
                                                         <Trigger Property="IsPressed" Value="True">
-                                                            <Setter Property="Background" Value="#EEEEEE"/>
+                                                            <Setter Property="Background" Value="#BBDEFB"/>
                                                         </Trigger>
                                                     </Style.Triggers>
                                                 </Style>
@@ -410,10 +456,11 @@
                                                     Cursor="Hand" 
                                                     Margin="0,0,6,0"
                                                     BorderThickness="0"
-                                                    Foreground="White">
+                                                    Foreground="White"
+                                                    Click="EditButton_Click">
                                                 <Button.Style>
                                                     <Style TargetType="Button">
-                                                        <Setter Property="Background" Value="#2196F3"/>
+                                                        <Setter Property="Background" Value="#3A8DFF"/>
                                                         <Setter Property="Template">
                                                             <Setter.Value>
                                                                 <ControlTemplate TargetType="Button">
@@ -427,10 +474,10 @@
                                                         </Setter>
                                                         <Style.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter Property="Background" Value="#1976D2"/>
+                                                                <Setter Property="Background" Value="#5AA3FF"/>
                                                             </Trigger>
                                                             <Trigger Property="IsPressed" Value="True">
-                                                                <Setter Property="Background" Value="#1565C0"/>
+                                                                <Setter Property="Background" Value="#2E7DD6"/>
                                                             </Trigger>
                                                         </Style.Triggers>
                                                     </Style>

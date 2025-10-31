@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -86,6 +87,8 @@ namespace menza_admin
         private Dictionary<string, long> allergenMap; // Map allergen names to IDs
         private byte[] selectedImageData;
         private string selectedImageFileName;
+        private Food editingFood; // Track the food being edited
+        private bool isEditMode; // Track if we're in edit mode
 
         public ManageFoods()
         {
@@ -164,113 +167,20 @@ namespace menza_admin
                 if (ShellfishCheckBox.IsChecked == true && allergenMap.ContainsKey("shellfish")) 
                     allergenIds.Add(allergenMap["shellfish"].ToString());
 
-                // Create the data object
-                var foodData = new
+                if (isEditMode && editingFood != null)
                 {
-                    name = FoodNameTextBox.Text,
-                    description = DescriptionTextBox.Text,
-                    price = price,
-                    allergens = allergenIds
-                };
-
-                // Debug: Show what we're about to send
-                var debugInfo = $"Sending to API:\nName: {foodData.name}\nPrice: {foodData.price}\nAllergen IDs: {string.Join(", ", allergenIds)}";
-                System.Diagnostics.Debug.WriteLine(debugInfo);
-                System.Diagnostics.Debug.WriteLine($"Allergen count being sent: {allergenIds.Count}");
-
-                // Send as multipart/form-data with file
-                using (var multipartContent = new MultipartFormDataContent())
-                {
-                    // Add JSON data
-                    string jsonData = JsonSerializer.Serialize(foodData);
-                    multipartContent.Add(new StringContent(jsonData), "data");
-
-                    // Add image file - use uploaded image if available, otherwise use placeholder
-                    byte[] imageData;
-                    string fileName;
-                    string contentType;
-
-                    if (selectedImageData != null && selectedImageData.Length > 0)
-                    {
-                        // Use uploaded image
-                        imageData = selectedImageData;
-                        fileName = selectedImageFileName ?? "uploaded_image.jpg";
-                        
-                        // Determine content type from file extension
-                        string extension = System.IO.Path.GetExtension(fileName).ToLower();
-                        if (extension == ".jpg" || extension == ".jpeg")
-                        {
-                            contentType = "image/jpeg";
-                        }
-                        else if (extension == ".png")
-                        {
-                            contentType = "image/png";
-                        }
-                        else if (extension == ".bmp")
-                        {
-                            contentType = "image/bmp";
-                        }
-                        else
-                        {
-                            contentType = "image/jpeg";
-                        }
-                    }
-                    else
-                    {
-                        // Use placeholder image
-                        imageData = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
-                        fileName = "placeholder.png";
-                        contentType = "image/png";
-                    }
-
-                    var imageContent = new ByteArrayContent(imageData);
-                    imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
-                    multipartContent.Add(imageContent, "file", fileName);
-
-                    using (var httpClient = new HttpClient())
-                    {
-                        httpClient.BaseAddress = new Uri("http://localhost:3001");
-                        httpClient.DefaultRequestHeaders.Add("X-Client-Type", "desktop");
-                        
-                        var response = await httpClient.PostAsync("/v1/food", multipartContent);
-                        string responseText = await response.Content.ReadAsStringAsync();
-
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            throw new Exception($"Failed to create food. Status: {response.StatusCode}\nResponse: {responseText}");
-                        }
-
-                        // Debug: Show the API response
-                        System.Diagnostics.Debug.WriteLine($"API Response: {responseText}");
-
-                        // Deserialize the created food
-                        var createdFood = JsonSerializer.Deserialize<Food>(responseText, Api.JsonOptions);
-                        if (createdFood == null)
-                        {
-                            throw new Exception("Failed to deserialize response");
-                        }
-                        
-                        // Debug: Check allergens in deserialized food
-                        System.Diagnostics.Debug.WriteLine($"Created food has {createdFood.Allergens?.Count ?? 0} allergens");
-                        if (createdFood.Allergens != null)
-                        {
-                            foreach (var allergen in createdFood.Allergens)
-                            {
-                                System.Diagnostics.Debug.WriteLine($"  - Allergen: {allergen.Name} (ID: {allergen.Id})");
-                            }
-                        }
-                        
-                        foodsList.Add(createdFood);
-                        ApplySearchFilter(); // Refresh filtered list
-                    }
+                    // UPDATE MODE
+                    await UpdateFoodAsync(editingFood.Id.ToString(), FoodNameTextBox.Text, DescriptionTextBox.Text, price, allergenIds);
                 }
-
-                MessageBox.Show("Étel sikeresen hozzáadva!", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
-                ClearAllFields();
+                else
+                {
+                    // CREATE MODE
+                    await CreateFoodAsync(FoodNameTextBox.Text, DescriptionTextBox.Text, price, allergenIds);
+                }
             }
             catch (Exception ex)
             {
-                var errorMessage = $"Hiba az étel hozzáadása során:\n\n{ex.Message}";
+                var errorMessage = $"Hiba az étel {(isEditMode ? "frissítése" : "hozzáadása")} során:\n\n{ex.Message}";
                 if (ex.InnerException != null)
                 {
                     errorMessage += $"\n\nInner Exception: {ex.InnerException.Message}";
@@ -281,6 +191,177 @@ namespace menza_admin
             {
                 AddFoodButton.IsEnabled = true;
             }
+        }
+
+        private async System.Threading.Tasks.Task CreateFoodAsync(string name, string description, int price, List<string> allergenIds)
+        {
+            // Create the data object
+            var foodData = new
+            {
+                name = name,
+                description = description,
+                price = price,
+                allergens = allergenIds
+            };
+
+            // Debug: Show what we're about to send
+            var debugInfo = $"Sending to API:\nName: {foodData.name}\nPrice: {foodData.price}\nAllergen IDs: {string.Join(", ", allergenIds)}";
+            System.Diagnostics.Debug.WriteLine(debugInfo);
+            System.Diagnostics.Debug.WriteLine($"Allergen count being sent: {allergenIds.Count}");
+
+            // Send as multipart/form-data with file
+            using (var multipartContent = new MultipartFormDataContent())
+            {
+                // Add JSON data
+                string jsonData = JsonSerializer.Serialize(foodData);
+                multipartContent.Add(new StringContent(jsonData), "data");
+
+                // Add image file - use uploaded image if available, otherwise use placeholder
+                byte[] imageData;
+                string fileName;
+                string contentType;
+
+                if (selectedImageData != null && selectedImageData.Length > 0)
+                {
+                    // Use uploaded image
+                    imageData = selectedImageData;
+                    fileName = selectedImageFileName ?? "uploaded_image.jpg";
+                    
+                    // Determine content type from file extension
+                    string extension = System.IO.Path.GetExtension(fileName).ToLower();
+                    if (extension == ".jpg" || extension == ".jpeg")
+                    {
+                        contentType = "image/jpeg";
+                    }
+                    else if (extension == ".png")
+                    {
+                        contentType = "image/png";
+                    }
+                    else if (extension == ".bmp")
+                    {
+                        contentType = "image/bmp";
+                    }
+                    else
+                    {
+                        contentType = "image/jpeg";
+                    }
+                }
+                else
+                {
+                    // Use placeholder image
+                    imageData = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+                    fileName = "placeholder.png";
+                    contentType = "image/png";
+                }
+
+                var imageContent = new ByteArrayContent(imageData);
+                imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                multipartContent.Add(imageContent, "file", fileName);
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.BaseAddress = new Uri("http://localhost:3001");
+                    httpClient.DefaultRequestHeaders.Add("X-Client-Type", "desktop");
+                    
+                    var response = await httpClient.PostAsync("/v1/food", multipartContent);
+                    string responseText = await response.Content.ReadAsStringAsync();
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception($"Failed to create food. Status: {response.StatusCode}\nResponse: {responseText}");
+                    }
+
+                    // Debug: Show the API response
+                    System.Diagnostics.Debug.WriteLine($"API Response: {responseText}");
+
+                    // Deserialize the created food
+                    var createdFood = JsonSerializer.Deserialize<Food>(responseText, Api.JsonOptions);
+                    if (createdFood == null)
+                    {
+                        throw new Exception("Failed to deserialize response");
+                    }
+                    
+                    // Debug: Check allergens in deserialized food
+                    System.Diagnostics.Debug.WriteLine($"Created food has {createdFood.Allergens?.Count ?? 0} allergens");
+                    if (createdFood.Allergens != null)
+                    {
+                        foreach (var allergen in createdFood.Allergens)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"  - Allergen: {allergen.Name} (ID: {allergen.Id})");
+                        }
+                    }
+                    
+                    foodsList.Add(createdFood);
+                    ApplySearchFilter(); // Refresh filtered list
+                }
+            }
+
+            MessageBox.Show("Étel sikeresen hozzáadva!", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+            ClearAllFields();
+        }
+
+        private async System.Threading.Tasks.Task UpdateFoodAsync(string foodId, string name, string description, int price, List<string> allergenIds)
+        {
+            // Create the data object - API expects direct JSON body
+            var foodData = new
+            {
+                name = name,
+                description = description,
+                price = price,
+                allergens = allergenIds
+            };
+
+            System.Diagnostics.Debug.WriteLine($"Updating food {foodId}");
+            System.Diagnostics.Debug.WriteLine($"Name: {foodData.name}, Price: {foodData.price}, Allergens: {allergenIds.Count}");
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = new Uri("http://localhost:3001");
+                httpClient.DefaultRequestHeaders.Add("X-Client-Type", "desktop");
+                
+                // Send as JSON (not multipart) - API expects JSON body
+                string jsonData = JsonSerializer.Serialize(foodData);
+                var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
+                
+                // Send PATCH request
+                var patchRequest = new HttpRequestMessage(new HttpMethod("PATCH"), $"/v1/food/{foodId}")
+                {
+                    Content = content
+                };
+                
+                var response = await httpClient.SendAsync(patchRequest);
+                string responseText = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception($"Failed to update food. Status: {response.StatusCode}\nResponse: {responseText}");
+                }
+
+                // API returns {message: "Food updated successfully"}, not the food object
+                // So we need to fetch the updated food separately
+                var getResponse = await httpClient.GetAsync($"/v1/food/{foodId}");
+                if (getResponse.IsSuccessStatusCode)
+                {
+                    string getFoodText = await getResponse.Content.ReadAsStringAsync();
+                    var updatedFood = JsonSerializer.Deserialize<Food>(getFoodText, Api.JsonOptions);
+                    
+                    if (updatedFood != null)
+                    {
+                        // Update the food in the list
+                        var index = foodsList.IndexOf(editingFood);
+                        if (index >= 0)
+                        {
+                            foodsList[index] = updatedFood;
+                        }
+                    }
+                }
+                
+                ApplySearchFilter(); // Refresh filtered list
+            }
+
+            MessageBox.Show("Étel sikeresen frissítve!", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+            ClearAllFields();
+            ExitEditMode();
         }
 
         private void ClearButton_Click(object sender, RoutedEventArgs e)
@@ -310,6 +391,43 @@ namespace menza_admin
             ImagePreview.Source = null;
             ImagePreviewBorder.Visibility = Visibility.Collapsed;
             ImageFileNameText.Text = "Nincs kiválasztott kép";
+            
+            // Exit edit mode
+            ExitEditMode();
+        }
+
+        private void EnterEditMode(Food food)
+        {
+            isEditMode = true;
+            editingFood = food;
+            
+            // Update button text
+            AddFoodButton.Content = "Étel Frissítése";
+            
+            // Populate form with food data
+            FoodNameTextBox.Text = food.Name;
+            DescriptionTextBox.Text = food.Description;
+            PriceTextBox.Text = food.Price.ToString();
+            
+            // Set allergen checkboxes
+            GlutenCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["gluten"]) ?? false;
+            DairyCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["dairy"]) ?? false;
+            NutsCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["nuts"]) ?? false;
+            PeanutsCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["peanuts"]) ?? false;
+            SesameCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["sesame"]) ?? false;
+            SoyCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["soy"]) ?? false;
+            FishCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["fish"]) ?? false;
+            ShellfishCheckBox.IsChecked = food.Allergens?.Any(a => a.Id == allergenMap["shellfish"]) ?? false;
+            
+            // Scroll to the form
+            FoodNameTextBox.Focus();
+        }
+
+        private void ExitEditMode()
+        {
+            isEditMode = false;
+            editingFood = null;
+            AddFoodButton.Content = "Étel Hozzáadása";
         }
 
         private async void LoadFoodsAsync()
@@ -474,6 +592,27 @@ namespace menza_admin
             ImagePreview.Source = null;
             ImagePreviewBorder.Visibility = Visibility.Collapsed;
             ImageFileNameText.Text = "Nincs kiválasztott kép";
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get the button that was clicked
+                var button = sender as Button;
+                if (button == null) return;
+
+                // Get the Food object from the button's DataContext
+                var food = button.DataContext as Food;
+                if (food == null) return;
+
+                // Enter edit mode and populate the form
+                EnterEditMode(food);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hiba: {ex.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
