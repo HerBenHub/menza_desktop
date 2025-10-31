@@ -5,8 +5,140 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:menza_admin"
       mc:Ignorable="d"
-      Title="ManageFoods" Height="450" Width="800">
-    <Grid>
-        
+      Title="ManageFoods" Height="800" Width="1200">
+    <Grid Background="#F5F5F5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="20">
+            <TextBlock Text="Ételek Kezelése" FontSize="32" FontWeight="Bold" Foreground="#333333"/>
+            <TextBlock Text="Adjon hozzá, szerkesszen és kezeljen ételeket" FontSize="14" Foreground="#666666" Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="20,0,20,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"/>
+                <ColumnDefinition Width="*" MinWidth="300"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Form Section -->
+            <Border Grid.Column="0" Background="White" Margin="0,0,10,0" CornerRadius="8" BorderThickness="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" Background="#2196F3" CornerRadius="8,8,0,0" Padding="15">
+                        <TextBlock Text="Új Étel Hozzáadása" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                    </Border>
+
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="15">
+                        <StackPanel Orientation="Vertical">
+                            <!-- Food Name -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
+                                <TextBlock Text="Étel Neve" FontWeight="Bold" Foreground="#333333"/>
+                                <TextBox x:Name="FoodNameTextBox" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            </StackPanel>
+
+                            <!-- Description -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
+                                <TextBlock Text="Leírás" FontWeight="Bold" Foreground="#333333"/>
+                                <TextBox x:Name="DescriptionTextBox" Height="80" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                            </StackPanel>
+
+                            <!-- Price -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
+                                <TextBlock Text="Ár (HUF)" FontWeight="Bold" Foreground="#333333"/>
+                                <TextBox x:Name="PriceTextBox" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            </StackPanel>
+
+                            <!-- Picture ID -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
+                                <TextBlock Text="Kép ID-ja" FontWeight="Bold" Foreground="#333333"/>
+                                <TextBox x:Name="PictureIdTextBox" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            </StackPanel>
+
+                            <!-- Image Upload -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
+                                <TextBlock Text="Kép Feltöltése" FontWeight="Bold" Foreground="#333333"/>
+                                <Button x:Name="UploadImageButton" Height="40" Background="#FFC107" Foreground="White" FontSize="14" FontWeight="Bold" Content="Kép Kiválasztása" Cursor="Hand"/>
+                            </StackPanel>
+
+                            <!-- Allergens -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
+                                <TextBlock Text="Allergének" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,10"/>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="AllergenTextBox" Grid.Column="0" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                                    <Button Grid.Column="1" Width="40" Height="40" Background="#4CAF50" Foreground="White" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Content="+" Cursor="Hand"/>
+                                </Grid>
+                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Height="100">
+                                    <ListBox x:Name="AllergensListBox" Background="White">
+                                        <ListBoxItem>Glutén</ListBoxItem>
+                                        <ListBoxItem>Tejtermék</ListBoxItem>
+                                        <ListBoxItem>Dió</ListBoxItem>
+                                    </ListBox>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Action Buttons -->
+                            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                                <Button x:Name="AddFoodButton" Height="45" Background="#2196F3" Foreground="White" FontSize="14" FontWeight="Bold" Content="Étel Hozzáadása" Cursor="Hand" HorizontalAlignment="Stretch" Margin="0,0,10,0"/>
+                                <Button x:Name="ClearButton" Height="45" Background="#9E9E9E" Foreground="White" FontSize="14" FontWeight="Bold" Content="Törlés" Cursor="Hand" HorizontalAlignment="Stretch"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+
+            <!-- List Section -->
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Margin="10,0,0,0" BorderThickness="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" Background="#4CAF50" CornerRadius="8,8,0,0" Padding="15">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Ételek Listája" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                            <TextBox Grid.Column="1" x:Name="SearchTextBox" Width="250" Height="35" Padding="10" FontSize="12" BorderThickness="0" Background="White" Foreground="#333333" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Foods DataGrid -->
+                    <DataGrid Grid.Row="1" x:Name="FoodsDataGrid" Margin="15" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" BorderThickness="1" BorderBrush="#DDDDDD">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="120" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Leírás" Binding="{Binding Description}" Width="150" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Ár (HUF)" Binding="{Binding Price}" Width="80" IsReadOnly="True"/>
+                            <DataGridTemplateColumn Header="Műveletek" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Background="#2196F3" Foreground="White" Padding="8" FontSize="12" FontWeight="Bold" Content="Szerkesztés" Cursor="Hand" Margin="0,0,5,0"/>
+                                            <Button Background="#F44336" Foreground="White" Padding="8" FontSize="12" FontWeight="Bold" Content="Törlés" Cursor="Hand"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </Page>
