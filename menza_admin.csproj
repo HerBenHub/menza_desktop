@@ -139,7 +139,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\BigIntConverter.cs" />
     <Compile Include="FoodSelectionDialog.xaml.cs">
       <DependentUpon>FoodSelectionDialog.xaml</DependentUpon>
     </Compile>

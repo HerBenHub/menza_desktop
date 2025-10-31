@@ -57,35 +57,20 @@
                                 <TextBox x:Name="PriceTextBox" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
                             </StackPanel>
 
-                            <!-- Picture ID -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
-                                <TextBlock Text="Kép ID-ja" FontWeight="Bold" Foreground="#333333"/>
-                                <TextBox x:Name="PictureIdTextBox" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
-                            </StackPanel>
-
-                            <!-- Image Upload -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
-                                <TextBlock Text="Kép Feltöltése" FontWeight="Bold" Foreground="#333333"/>
-                                <Button x:Name="UploadImageButton" Height="40" Background="#FFC107" Foreground="White" FontSize="14" FontWeight="Bold" Content="Kép Kiválasztása" Cursor="Hand"/>
-                            </StackPanel>
-
                             <!-- Allergens -->
                             <StackPanel Orientation="Vertical" Margin="0,0,0,15">
                                 <TextBlock Text="Allergének" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,10"/>
-                                <Grid Margin="0,0,0,10">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBox x:Name="AllergenTextBox" Grid.Column="0" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
-                                    <Button Grid.Column="1" Width="40" Height="40" Background="#4CAF50" Foreground="White" FontSize="16" FontWeight="Bold" Margin="10,0,0,0" Content="+" Cursor="Hand"/>
-                                </Grid>
-                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Height="100">
-                                    <ListBox x:Name="AllergensListBox" Background="White">
-                                        <ListBoxItem>Glutén</ListBoxItem>
-                                        <ListBoxItem>Tejtermék</ListBoxItem>
-                                        <ListBoxItem>Dió</ListBoxItem>
-                                    </ListBox>
+                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="10" Background="White">
+                                    <StackPanel>
+                                        <CheckBox x:Name="GlutenCheckBox" Content="Glutén" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="DairyCheckBox" Content="Tejtermék" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="NutsCheckBox" Content="Dió" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="PeanutsCheckBox" Content="Mogyoró" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="SesameCheckBox" Content="Szezám" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="SoyCheckBox" Content="Szóya" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="FishCheckBox" Content="Hal" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="ShellfishCheckBox" Content="Rák" Margin="0,5,0,5" FontSize="14"/>
+                                    </StackPanel>
                                 </Border>
                             </StackPanel>
 
