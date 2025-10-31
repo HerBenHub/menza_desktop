@@ -126,6 +126,9 @@
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\OrdersByWeekRequest.cs" />
     <Compile Include="Models\OrderSummary.cs" />
+    <Compile Include="Orders.xaml.cs">
+      <DependentUpon>Orders.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Services\Api.cs" />
     <Page Include="Export.xaml" />
     <Page Include="MainWindow.xaml">
@@ -142,6 +145,7 @@
     </Compile>
     <Page Include="ManageFoods.xaml" />
     <Page Include="ManageMenus.xaml" />
+    <Page Include="Orders.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

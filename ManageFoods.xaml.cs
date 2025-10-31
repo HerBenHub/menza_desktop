@@ -1,8 +1,8 @@
-using System.Windows;
+using System.Windows.Controls;
 
 namespace menza_admin
 {
-    public partial class ManageFoods : Window
+    public partial class ManageFoods : Page
     {
         public ManageFoods()
         {

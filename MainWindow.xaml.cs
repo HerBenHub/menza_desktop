@@ -13,29 +13,30 @@ namespace menza_admin
         public MainWindow()
         {
             InitializeComponent();
+            MainFrame.Navigate(new Orders()); // Start with OrdersPage
         }
 
-        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        private void NavigateOrders(object sender, RoutedEventArgs e)
         {
-            StatusLabel.Content = "Kapcsolat ellenőrzése...";
-            try
-            {
-                // Server responds at root -> request "/"
-                var text = await App.Api.GetAsync("/");
-                StatusLabel.Content = $"Kapcsolat él! Válasz: {text}";
-            }
-            catch (Exception ex)
-            {
-                StatusLabel.Content = "Kapcsolat sikertelen!";
-                MessageBox.Show($"Hiba az adatkapcsolatban:\n{ex.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+            MainFrame.Navigate(new Orders());
         }
 
-        private async void AddFoodButton_Click(object sender, RoutedEventArgs e)
+        private void NavigateMenus(object sender, RoutedEventArgs e)
         {
-            
+            MainFrame.Navigate(new ManageMenus());
+        }
+
+        private void NavigateFoods(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ManageFoods());
+        }
+        
+        private void NavigateExport(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new Export());
         }
     }
+
 }
 
 
