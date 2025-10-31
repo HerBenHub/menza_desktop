@@ -22,6 +22,7 @@ namespace menza_admin
             InitializeAllergenMap();
             InitializeData();
             SetupEventHandlers();
+            LoadFoodsAsync();
         }
 
         private void InitializeAllergenMap()
@@ -179,6 +180,112 @@ namespace menza_admin
             SoyCheckBox.IsChecked = false;
             FishCheckBox.IsChecked = false;
             ShellfishCheckBox.IsChecked = false;
+        }
+
+        private async void LoadFoodsAsync()
+        {
+            try
+            {
+                var foods = await App.Api.GetAllFoodsAsync();
+                foodsList.Clear();
+                foreach (var food in foods)
+                {
+                    foodsList.Add(food);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hiba az ételek betöltése során:\n\n{ex.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get the button that was clicked
+                var button = sender as Button;
+                if (button == null) return;
+
+                // Get the Food object from the button's DataContext
+                var food = button.DataContext as Food;
+                if (food == null) return;
+
+                // Confirm deletion
+                var result = MessageBox.Show(
+                    $"Biztosan törölni szeretné a(z) '{food.Name}' ételt?\n\nEz a művelet nem vonható vissza!",
+                    "Törlés megerősítése",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+
+                // Disable the button during deletion
+                button.IsEnabled = false;
+
+                try
+                {
+                    // Call API to delete the food
+                    await App.Api.DeleteFoodAsync(food.Id);
+
+                    // Remove from local list
+                    foodsList.Remove(food);
+
+                    MessageBox.Show($"Az étel '{food.Name}' sikeresen törölve!", "Siker", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                finally
+                {
+                    button.IsEnabled = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = $"Hiba az étel törlése során:\n\n{ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMessage += $"\n\nInner Exception: {ex.InnerException.Message}";
+                }
+                MessageBox.Show(errorMessage, "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void DescriptionButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                // Get the button that was clicked
+                var button = sender as Button;
+                if (button == null) return;
+
+                // Get the Food object from the button's DataContext
+                var food = button.DataContext as Food;
+                if (food == null) return;
+
+                // Check if the panel is already showing this food's description
+                if (DescriptionPanel.Visibility == Visibility.Visible && 
+                    DescriptionContentTextBlock.Text == food.Description)
+                {
+                    // Toggle off - hide the panel
+                    DescriptionPanel.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    // Show the description in the panel
+                    DescriptionTitleTextBlock.Text = $"Leírás - {food.Name}";
+                    DescriptionContentTextBlock.Text = food.Description;
+                    DescriptionPanel.Visibility = Visibility.Visible;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hiba: {ex.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void CloseDescriptionButton_Click(object sender, RoutedEventArgs e)
+        {
+            DescriptionPanel.Visibility = Visibility.Collapsed;
         }
     }
 }
