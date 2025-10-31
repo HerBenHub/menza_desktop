@@ -193,6 +193,20 @@ namespace menza_admin.Services
             var result = JsonSerializer.Deserialize<CreateMenuResponse>(content, JsonOptions);
             return result ?? throw new Exception("Failed to deserialize response");
         }
+
+        public async Task<List<Food>> GetAllFoodsAsync()
+        {
+            var response = await _client.GetAsync("/v1/food");
+            var content = await response.Content.ReadAsStringAsync();
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to get foods. Status: {response.StatusCode}, Response: {content}");
+            }
+
+            var foods = JsonSerializer.Deserialize<List<Food>>(content, JsonOptions);
+            return foods ?? new List<Food>();
+        }
     }
 
     // Custom JSON converter to handle BigInt values from Node.js API

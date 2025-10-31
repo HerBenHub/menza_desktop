@@ -16,6 +16,7 @@
                 <Button Content="Rendelések" Width="80" Margin="5" Click="NavigateOrders"/>
                 <Button Content="Ételek" Width="80" Margin="5" Click="NavigateFoods"/>
                 <Button Content="Menük" Width="80" Margin="5" Click="NavigateMenus"/>
+                <Button Content="Heti Menü" Width="90" Margin="5" Click="NavigateWeeklyMenu"/>
             </StackPanel>
         </Border>
 
