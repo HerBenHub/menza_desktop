@@ -145,9 +145,6 @@
     <Compile Include="ManageFoods.xaml.cs">
       <DependentUpon>ManageFoods.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ManageMenus.xaml.cs">
-      <DependentUpon>ManageMenus.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ManageWeeklyMenu.xaml.cs">
       <DependentUpon>ManageWeeklyMenu.xaml</DependentUpon>
     </Compile>
@@ -178,7 +175,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ManageFoods.xaml" />
-    <Page Include="ManageMenus.xaml" />
     <Page Include="ManageWeeklyMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>

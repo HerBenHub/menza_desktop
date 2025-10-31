@@ -1,16 +1,22 @@
 ﻿using System;
-using System.IO;
 using System.Windows;
 using menza_admin.Services;
 using Microsoft.Extensions.Configuration;
 
 namespace menza_admin
 {
+    /// <summary>
+    /// Alkalmazás osztály - az alkalmazás belépési pontja és globális erőforrás kezelője
+    /// </summary>
     public partial class App : Application
     {
-        public static Api Api { get; private set; }
-        private static IConfiguration Configuration { get; set; }
+        public static Api Api { get; private set; } // Globális API kliens példány
+        private static IConfiguration Configuration { get; set; } // Konfigurációs beállítások
 
+        /// <summary>
+        /// Alkalmazás indításakor fut le
+        /// Inicializálja a konfigurációt és az API klienst
+        /// </summary>
         protected override void OnStartup(StartupEventArgs e)
         {
             try
@@ -22,14 +28,17 @@ namespace menza_admin
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Application initialization failed:\n{ex.Message}",
-                    "Startup Error",
+                    $"Az alkalmazás inicializálása sikertelen:\n{ex.Message}",
+                    "Indítási hiba",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 Shutdown(1);
             }
         }
 
+        /// <summary>
+        /// Betölti az alkalmazás konfigurációját az appsettings.json fájlból
+        /// </summary>
         private void InitializeConfiguration()
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -41,6 +50,10 @@ namespace menza_admin
                 .Build();
         }
 
+        /// <summary>
+        /// Inicializálja az API klienst a konfigurációban megadott alapcím használatával
+        /// Validálja az API URL-t, mielőtt létrehozná a kliens példányt
+        /// </summary>
         private void InitializeApi()
         {
             var baseUrl = Configuration["ApiBaseUrl"];
@@ -48,22 +61,26 @@ namespace menza_admin
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
                 throw new InvalidOperationException(
-                    "ApiBaseUrl not configured in appsettings.json. Please check your configuration.");
+                    "Az ApiBaseUrl nincs beállítva az appsettings.json fájlban. Kérem ellenőrizze a konfigurációt.");
             }
 
             if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out _))
             {
                 throw new InvalidOperationException(
-                    $"Invalid ApiBaseUrl format: {baseUrl}. URL must be absolute (e.g., http://localhost:3001)");
+                    $"Érvénytelen ApiBaseUrl formátum: {baseUrl}. Az URL-nek abszolútnak kell lennie (pl. http://localhost:3001)");
             }
 
             Api = new Api(baseUrl);
         }
 
+        /// <summary>
+        /// Alkalmazás kilépésekor fut le
+        /// Tisztítja az erőforrásokat (API kliens)
+        /// </summary>
         protected override void OnExit(ExitEventArgs e)
         {
-            // Cleanup if needed
-            Api?.Dispose();  // Note: You'll need to implement IDisposable in api class
+            // Erőforrások tisztítása ha szükséges
+            Api?.Dispose();
             base.OnExit(e);
         }
     }

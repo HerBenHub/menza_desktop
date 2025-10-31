@@ -1,45 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using menza_admin.Models;
 using Microsoft.Win32;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
-using Syncfusion.Pdf;
 using Syncfusion.Pdf.Grid;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Drawing;
 using iTextSharp.text.pdf;
-using PdfPage = iTextSharp.text.pdf.PdfPage;
 using iTextSharp.text;
 
 namespace menza_admin
 {
+    /// <summary>
+    /// Rendelések oldal osztály
+    /// Megjeleníti és kezeli a napi rendeléseket, lehetővé teszi a szűrést és PDF exportálást
+    /// </summary>
     public partial class Orders : Page
     {
-        private List<OrderDisplayItem> _orderItems = new List<OrderDisplayItem>();
-        private DateTime _selectedDate;
+        private List<OrderDisplayItem> _orderItems = new List<OrderDisplayItem>(); // Megjelenítendő rendelések listája
+        private DateTime _selectedDate; // Kiválasztott dátum
 
         public Orders()
         {
-            InitializeComponent();
+            InitializeComponent();              
             Loaded += Orders_Loaded;
         }
 
+        /// <summary>
+        /// Oldal betöltésekor fut le
+        /// Beállítja a mai dátumot alapértelmezettnek és betölti a rendeléseket
+        /// </summary>
         private async void Orders_Loaded(object sender, RoutedEventArgs e)
         {
-            // Set today's date as default
+            // Mai dátum beállítása alapértelmezettként
             _selectedDate = DateTime.Now;
             OrderDatePicker.SelectedDate = _selectedDate;
             
             await LoadOrdersForDate(_selectedDate);
         }
 
+        /// <summary>
+        /// Eseménykezelő a dátumválasztó változásához
+        /// Betölti a kiválasztott dátumhoz tartozó rendeléseket
+        /// </summary>
         private async void OrderDatePicker_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
             if (OrderDatePicker.SelectedDate.HasValue)
@@ -49,24 +54,29 @@ namespace menza_admin
             }
         }
 
+        /// <summary>
+        /// Betölti a megadott dátumhoz tartozó rendeléseket az API-ból
+        /// Kiszámítja az összesítéseket és frissíti a felhasználói felületet
+        /// </summary>
+        /// <param name="date">A lekérdezni kívánt dátum</param>
         private async System.Threading.Tasks.Task LoadOrdersForDate(DateTime date)
         {
             try
             {
-                // Show loading state
+                // Betöltési állapot megjelenítése
                 ShowLoadingState();
 
-                // Update date display
+                // Dátum megjelenítésének frissítése
                 DateDisplay.Text = date.ToString("dddd, MMMM d, yyyy");
 
-                // Get ISO week number
+                // ISO hétszám lekérése
                 int weekNumber = GetIso8601WeekOfYear(date);
                 int dayOfWeek = GetIsoDayOfWeek(date);
 
-                // Fetch orders from API
+                // Rendelések lekérése az API-ból
                 var orders = await App.Api.GetOrdersByWeekAsync(date.Year, weekNumber, dayOfWeek);
 
-                // Process orders for display
+                // Rendelések feldolgozása megjelenítéshez
                 _orderItems = orders.Select(order => new OrderDisplayItem
                 {
                     Id = order.Id,
@@ -79,16 +89,16 @@ namespace menza_admin
                         : 0
                 }).ToList();
 
-                // Calculate total revenue
+                // Teljes bevétel számítása
                 int totalRevenue = _orderItems.Sum(item => item.TodayRevenue);
                 int totalOrders = _orderItems.Sum(item => item.TodayQuantity);
 
-                // Update UI
+                // Felület frissítése
                 OrdersDataGrid.ItemsSource = _orderItems;
                 TotalRevenueText.Text = $"{totalRevenue:N0} Ft";
                 TotalOrdersText.Text = totalOrders.ToString();
 
-                // Show appropriate state
+                // Megfelelő állapot megjelenítése
                 if (_orderItems.Count == 0)
                 {
                     ShowEmptyState();
@@ -100,10 +110,13 @@ namespace menza_admin
             }
             catch (Exception ex)
             {
-                ShowErrorState($"Error loading orders: {ex.Message}");
+                ShowErrorState($"Hiba a rendelések betöltése során: {ex.Message}");
             }
         }
 
+        /// <summary>
+        /// Megjeleníti a betöltési állapotot
+        /// </summary>
         private void ShowLoadingState()
         {
             LoadingPanel.Visibility = Visibility.Visible;
@@ -112,6 +125,9 @@ namespace menza_admin
             OrdersDataGrid.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Megjeleníti az üres állapotot (nincs rendelés)
+        /// </summary>
         private void ShowEmptyState()
         {
             LoadingPanel.Visibility = Visibility.Collapsed;
@@ -120,6 +136,10 @@ namespace menza_admin
             OrdersDataGrid.Visibility = Visibility.Collapsed;
         }
 
+        /// <summary>
+        /// Megjeleníti a hibaállapotot
+        /// </summary>
+        /// <param name="message">Hibaüzenet</param>
         private void ShowErrorState(string message)
         {
             LoadingPanel.Visibility = Visibility.Collapsed;
@@ -129,6 +149,9 @@ namespace menza_admin
             ErrorText.Text = message;
         }
 
+        /// <summary>
+        /// Megjeleníti az adatok állapotát
+        /// </summary>
         private void ShowDataState()
         {
             LoadingPanel.Visibility = Visibility.Collapsed;
@@ -137,16 +160,24 @@ namespace menza_admin
             OrdersDataGrid.Visibility = Visibility.Visible;
         }
 
+        /// <summary>
+        /// Eseménykezelő a Frissítés gomb kattintásához
+        /// Újratölti a kiválasztott dátumhoz tartozó rendeléseket
+        /// </summary>
         private async void RefreshButton_Click(object sender, RoutedEventArgs e)
         {
             await LoadOrdersForDate(_selectedDate);
         }
 
+        /// <summary>
+        /// Eseménykezelő a PDF Export gomb kattintásához
+        /// Létrehoz egy PDF dokumentumot a napi rendelésekkel és összesítésekkel
+        /// </summary>
         private async void ExportButton_Click(object sender, RoutedEventArgs e)
         {
             if (_orderItems.Count == 0)
             {
-                MessageBox.Show("No orders to export.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Nincs exportálható rendelés.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -160,7 +191,7 @@ namespace menza_admin
                 {
                     FileName = $"Napi_Összesítés_{_selectedDate:yyyy-MM-dd}",
                     DefaultExt = ".pdf",
-                    Filter = "PDF files (*.pdf)|*.pdf"
+                    Filter = "PDF fájlok (*.pdf)|*.pdf"
                 };
 
                 if (saveDialog.ShowDialog() == true)
@@ -170,54 +201,54 @@ namespace menza_admin
                         Syncfusion.Pdf.PdfPage page = document.Pages.Add();
                         PdfGraphics graphics = page.Graphics;
 
-                        // Create fonts
+                        // Betűtípusok létrehozása
                         Syncfusion.Pdf.Graphics.PdfFont titleFont = new PdfStandardFont(PdfFontFamily.TimesRoman, 18, PdfFontStyle.Bold);
                         Syncfusion.Pdf.Graphics.PdfFont normalFont = new PdfStandardFont(PdfFontFamily.TimesRoman, 12);
 
-                        // Add title
+                        // Cím hozzáadása
                         graphics.DrawString($"Napi összesítés - {_selectedDate:yyyy.MM.dd}",
                             titleFont, PdfBrushes.Black, new PointF(0, 0));
 
-                        // Create orders grid
+                        // Rendelések táblázat létrehozása
                         PdfGrid grid = new PdfGrid();
                         grid.Columns.Add(4);
                         grid.Headers.Add(1);
 
-                        // Style the grid
+                        // Táblázat stílusának beállítása
                         grid.Style.Font = normalFont;
                         
-                        // Set header values
+                        // Fejléc értékek beállítása
                         PdfGridRow header = grid.Headers[0];
                         header.Cells[0].Value = "Étel neve";
                         header.Cells[1].Value = "Ár (Ft)";
                         header.Cells[2].Value = "Mennyiség";
                         header.Cells[3].Value = "Összesen (Ft)";
 
-                        // Add data rows
+                        // Adatsorok hozzáadása
                         foreach (var order in _orderItems)
                         {
                             PdfGridRow row = grid.Rows.Add();
-                            row.Cells[0].Value = order.Name ?? "Unknown";
+                            row.Cells[0].Value = order.Name ?? "Ismeretlen";
                             row.Cells[1].Value = order.Price.ToString();
                             row.Cells[2].Value = order.TodayQuantity.ToString();
                             row.Cells[3].Value = order.TodayRevenue.ToString();
                         }
 
-                        // Calculate totals
+                        // Összesítések számítása
                         int totalQuantity = _orderItems.Sum(x => x.TodayQuantity);
                         int totalRevenue = _orderItems.Sum(x => x.TodayRevenue);
 
-                        // Draw the grid
+                        // Táblázat rajzolása
                         grid.Draw(page, new RectangleF(0, 50, page.Size.Width, 500));
 
-                        // Add totals at the bottom
-                        float yPos = 570; // 50 (grid Y) + 500 (grid height) + 20 (spacing)
+                        // Összesítések hozzáadása az alján
+                        float yPos = 570;
                         graphics.DrawString($"Összes rendelés: {totalQuantity}", 
                             titleFont, PdfBrushes.Black, new PointF(0, yPos));
                         graphics.DrawString($"Összes bevétel: {totalRevenue:N0} Ft", 
                             titleFont, PdfBrushes.Black, new PointF(0, yPos + 30));
 
-                        // Save the document
+                        // Dokumentum mentése
                         using (var stream = saveDialog.OpenFile())
                         {
                             document.Save(stream);
@@ -229,8 +260,8 @@ namespace menza_admin
             }
             catch (Exception ex)
             {
-                ErrorText.Text = $"Export failed: {ex.Message}";
-                MessageBox.Show($"Export failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorText.Text = $"Export sikertelen: {ex.Message}";
+                MessageBox.Show($"Export sikertelen: {ex.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -239,7 +270,11 @@ namespace menza_admin
             }
         }
 
-        // Helper method to get ISO 8601 week number
+        /// <summary>
+        /// Segédmetódus az ISO 8601 hétszám lekéréséhez
+        /// </summary>
+        /// <param name="date">A dátum, amelyhez a hétszámot keressük</param>
+        /// <returns>ISO 8601 hétszám</returns>
         private int GetIso8601WeekOfYear(DateTime date)
         {
             DayOfWeek day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(date);
@@ -251,22 +286,30 @@ namespace menza_admin
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
         }
 
-        // Helper method to get ISO day of week (Monday = 1, Sunday = 7)
+        /// <summary>
+        /// Segédmetódus az ISO hét napjának lekéréséhez (Hétfő = 1, Vasárnap = 7)
+        /// </summary>
+        /// <param name="date">A dátum</param>
+        /// <returns>Nap sorszáma (1-7)</returns>
         private int GetIsoDayOfWeek(DateTime date)
         {
             int dayOfWeek = (int)date.DayOfWeek;
-            return dayOfWeek == 0 ? 7 : dayOfWeek; // Convert Sunday from 0 to 7
+            return dayOfWeek == 0 ? 7 : dayOfWeek; // Vasárnap konvertálása 0-ról 7-re
         }
 
-        // Helper method to handle encoding of text in PDF cells
+        /// <summary>
+        /// Segédmetódus PDF cellák szövegkódolásának kezeléséhez
+        /// </summary>
         private void AddCellWithEncoding(PdfPTable table, string text)
         {
-            // Create a cell with proper encoding for Hungarian characters
+            // Cella létrehozása megfelelő kódolással a magyar karakterekhez
             var cell = new PdfPCell(new Phrase(text, FontFactory.GetFont(FontFactory.HELVETICA, BaseFont.IDENTITY_H, true, 12)));
             table.AddCell(cell);
         }
 
-        // Helper method to add cell with specific font
+        /// <summary>
+        /// Segédmetódus cella hozzáadásához megadott betűtípussal
+        /// </summary>
         private void AddCellWithFont(iTextSharp.text.pdf.PdfPTable table, string text, iTextSharp.text.Font font)
         {
             var cell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(text, font));
@@ -275,7 +318,10 @@ namespace menza_admin
         }
     }
 
-    // Display model for DataGrid
+    /// <summary>
+    /// Megjelenítési modell a DataGrid számára
+    /// Reprezentál egy rendelési tételt a megjelenítéshez szükséges adatokkal
+    /// </summary>
     public class OrderDisplayItem
     {
         public string Id { get; set; }
