@@ -24,6 +24,7 @@ namespace menza_admin
         };
 
         private List<Food> _allFoods = new List<Food>();
+        private string _currentMenuId = null; // Track if we're editing an existing menu
 
         public ManageWeeklyMenu()
         {
@@ -162,7 +163,7 @@ namespace menza_admin
             }
         }
 
-        private async void LoadMenu_Click(object sender, RoutedEventArgs e)
+        private async Task LoadMenu_ClickAsync(object sender, RoutedEventArgs e)
         {
             if (YearComboBox.SelectedItem == null || WeekComboBox.SelectedItem == null)
             {
@@ -185,27 +186,66 @@ namespace menza_admin
                 {
                     _weeklyMenu[day] = new Food[3];
                 }
+                _currentMenuId = null;
 
                 // Load menu data for each day
                 foreach (var menu in menus.Where(m => m.Day >= 1 && m.Day <= 5))
                 {
+                    // Store the menu ID (all days share the same menu ID)
+                    if (_currentMenuId == null)
+                    {
+                        _currentMenuId = menu.Id;
+                    }
+
                     if (menu.Foods != null && menu.Foods.Count > 0)
                     {
                         for (int i = 0; i < Math.Min(menu.Foods.Count, 3); i++)
                         {
-                            _weeklyMenu[menu.Day][i] = menu.Foods[i];
+                            var loadedFood = menu.Foods[i];
+                            
+                            // Find the corresponding food in _allFoods to ensure we have the full object
+                            var foodInList = _allFoods.FirstOrDefault(f => f.Id == loadedFood.Id);
+                            
+                            if (foodInList != null)
+                            {
+                                _weeklyMenu[menu.Day][i] = foodInList;
+                            }
+                            else
+                            {
+                                // If food not found in list, use the loaded food but log a warning
+                                _weeklyMenu[menu.Day][i] = loadedFood;
+                                System.Diagnostics.Debug.WriteLine($"Warning: Food ID {loadedFood.Id} ({loadedFood.Name}) not found in _allFoods list");
+                            }
                         }
                     }
                 }
 
                 RefreshAllSlots();
-                StatusText.Text = "Menü betöltve!";
+                
+                if (_currentMenuId != null)
+                {
+                    StatusText.Text = "Menü betöltve! (Szerkesztési mód)";
+                    System.Diagnostics.Debug.WriteLine($"Menu loaded in edit mode. Menu ID: {_currentMenuId}");
+                }
+                else
+                {
+                    StatusText.Text = "Nincs menü erre a hétre";
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Nem sikerült betölteni a menüt: {ex.Message}", "Hiba", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-                StatusText.Text = "";
+                // Check if it's a 404 (menu not found)
+                if (ex.Message.Contains("404") || ex.Message.Contains("Not Found") || ex.Message.Contains("not found"))
+                {
+                    StatusText.Text = "Nincs menü erre a hétre";
+                    System.Diagnostics.Debug.WriteLine($"No menu found for week {week}, year {year}");
+                }
+                else
+                {
+                    MessageBox.Show($"Nem sikerült betölteni a menüt: {ex.Message}", "Hiba", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    StatusText.Text = "";
+                }
             }
         }
 
@@ -215,13 +255,9 @@ namespace menza_admin
             {
                 _weeklyMenu[day] = new Food[3];
             }
+            _currentMenuId = null;
             RefreshAllSlots();
             StatusText.Text = "Új menü létrehozva";
-        }
-
-        private List<Food> GetUsedFoodsForDay(int day)
-        {
-            return _weeklyMenu[day].Where(f => f != null).ToList();
         }
 
         private async void SaveMenu_Click(object sender, RoutedEventArgs e)
@@ -259,25 +295,99 @@ namespace menza_admin
                     Days = new Dictionary<string, List<string>>()
                 };
 
-                // Convert food arrays to ID lists (exactly 3 per day)
+                // Convert food arrays to ID lists (exactly 3 per day) with validation and debugging
                 foreach (var day in _weeklyMenu)
                 {
-                    request.Days[day.Key.ToString()] = day.Value
-                        .Select(f => f.Id.ToString())
-                        .ToList();
+                    var foodIds = new List<string>();
+                    
+                    foreach (var food in day.Value)
+                    {
+                        if (food == null)
+                        {
+                            MessageBox.Show($"Null étel található a(z) {GetDayName(day.Key)} napon!", 
+                                "Adathiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        
+                        if (food.Id <= 0)
+                        {
+                            MessageBox.Show($"Érvénytelen étel ID ({food.Id}) a(z) {GetDayName(day.Key)} napon!\nÉtel neve: {food.Name}", 
+                                "Adathiba", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        
+                        foodIds.Add(food.Id.ToString());
+                    }
+                    
+                    request.Days[day.Key.ToString()] = foodIds;
+                    
+                    // Debug output
+                    System.Diagnostics.Debug.WriteLine($"Day {day.Key} ({GetDayName(day.Key)}): {string.Join(", ", foodIds)}");
                 }
 
-                var response = await App.Api.CreateMenuAsync(request);
+                // Additional debug output for the entire request
+                System.Diagnostics.Debug.WriteLine($"Creating/Updating menu for Year: {year}, Week: {week}");
+                foreach (var dayEntry in request.Days)
+                {
+                    System.Diagnostics.Debug.WriteLine($"  Day {dayEntry.Key}: [{string.Join(", ", dayEntry.Value)}]");
+                }
+
+                CreateMenuResponse response;
                 
-                StatusText.Text = "Menü sikeresen mentve!";
-                MessageBox.Show("A heti menü sikeresen mentve!", "Siker", 
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                // Check if we're editing an existing menu or creating a new one
+                if (_currentMenuId != null)
+                {
+                    // Update existing menu using PATCH
+                    response = await App.Api.UpdateMenuAsync(request);
+                    StatusText.Text = "Menü sikeresen frissítve!";
+                    MessageBox.Show("A heti menü sikeresen frissítve!", "Siker", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    // Create new menu using POST
+                    response = await App.Api.CreateMenuAsync(request);
+                    StatusText.Text = "Menü sikeresen mentve!";
+                    MessageBox.Show("A heti menü sikeresen mentve!", "Siker", 
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                
+                // Reload the menu to get/update the menu ID
+                await LoadMenu_ClickAsync(null, null);
             }
             catch (Exception ex)
             {
                 StatusText.Text = "";
-                MessageBox.Show($"Nem sikerült menteni a menüt: {ex.Message}", "Hiba", 
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                
+                // Enhanced error message with more details
+                System.Diagnostics.Debug.WriteLine($"Menu save error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                // Check if it's a conflict (menu already exists)
+                if (ex.Message.Contains("409") || ex.Message.Contains("Conflict") || ex.Message.Contains("a menü már létezik"))
+                {
+                    var result = MessageBox.Show(
+                        "Ehhez a héthez már létezik menü. Szeretné betölteni?", 
+                        "Menü már létezik", 
+                        MessageBoxButton.YesNo, 
+                        MessageBoxImage.Question);
+                    
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        await LoadMenu_ClickAsync(null, null);
+                    }
+                }
+                else if (ex.Message.Contains("400") || ex.Message.Contains("Bad Request") || ex.Message.Contains("Invalid food ID"))
+                {
+                    MessageBox.Show($"Érvénytelen étel ID!\n\n{ex.Message}\n\nKérjük ellenőrizze, hogy az összes kiválasztott étel létezik az adatbázisban.", 
+                        "Érvénytelen adat", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    MessageBox.Show($"Nem sikerült menteni a menüt: {ex.Message}", "Hiba", 
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -473,6 +583,11 @@ namespace menza_admin
             if (day == 4) return "Thursday";
             if (day == 5) return "Friday";
             return "";
+        }
+
+        private async void LoadMenu_Click(object sender, RoutedEventArgs e)
+        {
+            await LoadMenu_ClickAsync(sender, e);
         }
     }
 

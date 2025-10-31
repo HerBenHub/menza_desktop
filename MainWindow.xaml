@@ -3,21 +3,75 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Height="900" Width="1400"
         WindowState="Maximized"
-        MinHeight="700" MinWidth="1000">
+        MinHeight="700" MinWidth="1000"
+        Background="#F5F7FA">
+    
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="NavButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,10"/>
+            <Setter Property="Margin" Value="5,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="5"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#5AA3FF"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#2E7DD6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Global Navbar (always visible) -->
-        <Border Grid.Row="0" Background="#3A8DFF" Height="50">
-            <StackPanel Orientation="Horizontal" Margin="10">
-                <Button Content="Rendelések" Width="80" Margin="5" Click="NavigateOrders"/>
-                <Button Content="Ételek" Width="80" Margin="5" Click="NavigateFoods"/>
-                <Button Content="Menük" Width="80" Margin="5" Click="NavigateMenus"/>
-                <Button Content="Heti Menü" Width="90" Margin="5" Click="NavigateWeeklyMenu"/>
-            </StackPanel>
+        <!-- Modern Navbar -->
+        <Border Grid.Row="0" Background="#3A8DFF" Height="60">
+            <Border.Effect>
+                <DropShadowEffect Color="#000000" Direction="270" ShadowDepth="2" Opacity="0.3" BlurRadius="8"/>
+            </Border.Effect>
+            
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Logo/Title -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="20,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="🍽️" FontSize="24" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Menza Admin" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+                
+                <!-- Navigation Buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,20,0" VerticalAlignment="Center">
+                    <Button Content="📋 Rendelések" Style="{StaticResource NavButtonStyle}" Click="NavigateOrders"/>
+                    <Button Content="🍕 Ételek" Style="{StaticResource NavButtonStyle}" Click="NavigateFoods"/>
+                    <Button Content="📅 Heti Menü" Style="{StaticResource NavButtonStyle}" Click="NavigateWeeklyMenu"/>
+                </StackPanel>
+            </Grid>
         </Border>
 
         <!-- Frame for page navigation -->

@@ -1,158 +1,204 @@
 ﻿<Page x:Class="menza_admin.ManageWeeklyMenu"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Heti Menü Kezelése">
+      Title="Heti Menü Kezelése"
+      Background="#F5F7FA">
     
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Page.Resources>
+        <!-- Card Style for Food Display -->
+        <Style x:Key="FoodCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#4CAF50"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="MinHeight" Value="90"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F1F8F4"/>
+                    <Setter Property="BorderBrush" Value="#66BB6A"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+    
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <TextBlock Text="Heti Menü Kezelése" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
-            <TextBlock Text="Állítsa össze a heti menüt - minden napra 3 ételt kell választani" 
-                       FontSize="14" Foreground="Gray"/>
-        </StackPanel>
-
-        <!-- Week Selection -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
-            <TextBlock Text="Év:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <ComboBox x:Name="YearComboBox" Width="100" Height="30" Margin="0,0,20,0" 
-                      SelectionChanged="YearComboBox_SelectionChanged"/>
-            
-            <TextBlock Text="Hét:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <ComboBox x:Name="WeekComboBox" Width="300" Height="30" Margin="0,0,20,0">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding WeekNumber}" Width="40" FontWeight="Bold"/>
-                            <TextBlock Text=" - "/>
-                            <TextBlock Text="{Binding DateRange}"/>
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-            
-            <Button Content="Menü Betöltése" Width="120" Height="30" Click="LoadMenu_Click" Margin="0,0,10,0"/>
-            <Button Content="Új Menü" Width="120" Height="30" Click="NewMenu_Click"/>
-        </StackPanel>
-
-        <!-- Days Grid -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-            <Border BorderBrush="#E0E0E0" BorderThickness="1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-
-                    <!-- Header Row -->
-                    <Border Grid.Row="0" Grid.Column="0" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1">
-                        <TextBlock Text="Nap" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="1" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1">
-                        <TextBlock Text="1. Menü" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="2" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1">
-                        <TextBlock Text="2. Menü" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="0" Grid.Column="3" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1">
-                        <TextBlock Text="3. Menü" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Border>
-
-                    <!-- Monday -->
-                    <Border Grid.Row="1" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="10">
-                        <TextBlock Text="Hétfő" FontWeight="Bold" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Monday1" Tag="1,0"/>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Monday2" Tag="1,1"/>
-                    </Border>
-                    <Border Grid.Row="1" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="5">
-                        <ContentControl x:Name="Monday3" Tag="1,2"/>
-                    </Border>
-
-                    <!-- Tuesday -->
-                    <Border Grid.Row="2" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="10">
-                        <TextBlock Text="Kedd" FontWeight="Bold" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="2" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Tuesday1" Tag="2,0"/>
-                    </Border>
-                    <Border Grid.Row="2" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Tuesday2" Tag="2,1"/>
-                    </Border>
-                    <Border Grid.Row="2" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="5">
-                        <ContentControl x:Name="Tuesday3" Tag="2,2"/>
-                    </Border>
-
-                    <!-- Wednesday -->
-                    <Border Grid.Row="3" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="10">
-                        <TextBlock Text="Szerda" FontWeight="Bold" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="3" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Wednesday1" Tag="3,0"/>
-                    </Border>
-                    <Border Grid.Row="3" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Wednesday2" Tag="3,1"/>
-                    </Border>
-                    <Border Grid.Row="3" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="5">
-                        <ContentControl x:Name="Wednesday3" Tag="3,2"/>
-                    </Border>
-
-                    <!-- Thursday -->
-                    <Border Grid.Row="4" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="10">
-                        <TextBlock Text="Csütörtök" FontWeight="Bold" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="4" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Thursday1" Tag="4,0"/>
-                    </Border>
-                    <Border Grid.Row="4" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="5">
-                        <ContentControl x:Name="Thursday2" Tag="4,1"/>
-                    </Border>
-                    <Border Grid.Row="4" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="5">
-                        <ContentControl x:Name="Thursday3" Tag="4,2"/>
-                    </Border>
-
-                    <!-- Friday -->
-                    <Border Grid.Row="5" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0" Padding="10">
-                        <TextBlock Text="Péntek" FontWeight="Bold" VerticalAlignment="Center"/>
-                    </Border>
-                    <Border Grid.Row="5" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0" Padding="5">
-                        <ContentControl x:Name="Friday1" Tag="5,0"/>
-                    </Border>
-                    <Border Grid.Row="5" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0" Padding="5">
-                        <ContentControl x:Name="Friday2" Tag="5,1"/>
-                    </Border>
-                    <Border Grid.Row="5" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,0" Padding="5">
-                        <ContentControl x:Name="Friday3" Tag="5,2"/>
-                    </Border>
-                </Grid>
+            <!-- Header with Card Style -->
+            <Border Grid.Row="0" Background="White" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" Direction="270" ShadowDepth="2" Opacity="0.1" BlurRadius="10"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="📅 Heti Menü Kezelése" FontSize="28" FontWeight="Bold" Foreground="#333" Margin="0,0,0,10"/>
+                    <TextBlock Text="Állítsa össze a heti menüt - minden napra 3 ételt kell választani" 
+                               FontSize="14" Foreground="#666"/>
+                </StackPanel>
             </Border>
-        </ScrollViewer>
 
-        <!-- Save Button -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
-            <TextBlock x:Name="StatusText" VerticalAlignment="Center" Margin="0,0,20,0" 
-                       Foreground="Green" FontWeight="Bold"/>
-            <Button Content="Mentés" Width="150" Height="40" Click="SaveMenu_Click" 
-                    Background="#4CAF50" Foreground="White" FontSize="14" FontWeight="Bold"/>
-        </StackPanel>
-    </Grid>
+            <!-- Week Selection Card -->
+            <Border Grid.Row="1" Background="White" CornerRadius="10" Padding="20" Margin="0,0,0,20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" Direction="270" ShadowDepth="2" Opacity="0.1" BlurRadius="10"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="Hét kiválasztása" FontSize="16" FontWeight="SemiBold" Foreground="#333" Margin="0,0,0,15"/>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Text="Év" FontSize="12" Foreground="#666" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="YearComboBox" Width="100" Height="35" 
+                                      SelectionChanged="YearComboBox_SelectionChanged"/>
+                        </StackPanel>
+                        
+                        <StackPanel Margin="0,0,20,0">
+                            <TextBlock Text="Hét" FontSize="12" Foreground="#666" Margin="0,0,0,5"/>
+                            <ComboBox x:Name="WeekComboBox" Width="350" Height="35">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding WeekNumber}" Width="40" FontWeight="Bold"/>
+                                            <TextBlock Text=" - "/>
+                                            <TextBlock Text="{Binding DateRange}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                            <Button Content="📥 Betöltés" Width="130" Height="35" Click="LoadMenu_Click" 
+                                    Margin="0,0,10,0" Style="{StaticResource SecondaryButton}"/>
+                            <Button Content="➕ Új Menü" Width="130" Height="35" Click="NewMenu_Click"
+                                    Style="{StaticResource SecondaryButton}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Days Grid Card -->
+            <Border Grid.Row="2" Background="White" CornerRadius="10" Padding="20">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" Direction="270" ShadowDepth="2" Opacity="0.1" BlurRadius="10"/>
+                </Border.Effect>
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"/>
+                            <RowDefinition Height="Auto" MinHeight="120"/>
+                            <RowDefinition Height="Auto" MinHeight="120"/>
+                            <RowDefinition Height="Auto" MinHeight="120"/>
+                            <RowDefinition Height="Auto" MinHeight="120"/>
+                            <RowDefinition Height="Auto" MinHeight="120"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Header Row -->
+                        <Border Grid.Row="0" Grid.Column="0" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,1,2" CornerRadius="5,0,0,0">
+                            <TextBlock Text="Nap" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="1" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,1,2">
+                            <TextBlock Text="1. Menü" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="2" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,1,2">
+                            <TextBlock Text="2. Menü" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="0" Grid.Column="3" Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="0,0,0,2" CornerRadius="0,5,0,0">
+                            <TextBlock Text="3. Menü" FontWeight="Bold" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+
+                        <!-- Monday -->
+                        <Border Grid.Row="1" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="15" Background="#FAFAFA">
+                            <TextBlock Text="Hétfő" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Monday1" Tag="1,0"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Monday2" Tag="1,1"/>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="8">
+                            <ContentControl x:Name="Monday3" Tag="1,2"/>
+                        </Border>
+
+                        <!-- Tuesday -->
+                        <Border Grid.Row="2" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="15" Background="#FAFAFA">
+                            <TextBlock Text="Kedd" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="2" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Tuesday1" Tag="2,0"/>
+                        </Border>
+                        <Border Grid.Row="2" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Tuesday2" Tag="2,1"/>
+                        </Border>
+                        <Border Grid.Row="2" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="8">
+                            <ContentControl x:Name="Tuesday3" Tag="2,2"/>
+                        </Border>
+
+                        <!-- Wednesday -->
+                        <Border Grid.Row="3" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="15" Background="#FAFAFA">
+                            <TextBlock Text="Szerda" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Wednesday1" Tag="3,0"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Wednesday2" Tag="3,1"/>
+                        </Border>
+                        <Border Grid.Row="3" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="8">
+                            <ContentControl x:Name="Wednesday3" Tag="3,2"/>
+                        </Border>
+
+                        <!-- Thursday -->
+                        <Border Grid.Row="4" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="15" Background="#FAFAFA">
+                            <TextBlock Text="Csütörtök" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Thursday1" Tag="4,0"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,1" Padding="8">
+                            <ContentControl x:Name="Thursday2" Tag="4,1"/>
+                        </Border>
+                        <Border Grid.Row="4" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="8">
+                            <ContentControl x:Name="Thursday3" Tag="4,2"/>
+                        </Border>
+
+                        <!-- Friday -->
+                        <Border Grid.Row="5" Grid.Column="0" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0" Padding="15" Background="#FAFAFA" CornerRadius="0,0,0,5">
+                            <TextBlock Text="Péntek" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="1" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0" Padding="8">
+                            <ContentControl x:Name="Friday1" Tag="5,0"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="2" BorderBrush="#E0E0E0" BorderThickness="0,0,1,0" Padding="8">
+                            <ContentControl x:Name="Friday2" Tag="5,1"/>
+                        </Border>
+                        <Border Grid.Row="5" Grid.Column="3" BorderBrush="#E0E0E0" BorderThickness="0,0,0,0" Padding="8" CornerRadius="0,0,5,0">
+                            <ContentControl x:Name="Friday3" Tag="5,2"/>
+                        </Border>
+                    </Grid>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Save Button -->
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+                <TextBlock x:Name="StatusText" VerticalAlignment="Center" Margin="0,0,20,0" 
+                           Foreground="#4CAF50" FontWeight="SemiBold" FontSize="14"/>
+                <Button Content="💾 Mentés" Width="180" Height="45" Click="SaveMenu_Click" 
+                        Style="{StaticResource PrimaryButton}" FontSize="16"/>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
 </Page>

@@ -194,6 +194,27 @@ namespace menza_admin.Services
             return result ?? throw new Exception("Failed to deserialize response");
         }
 
+        //Update menu
+        public async Task<CreateMenuResponse> UpdateMenuAsync(CreateMenuRequest request)
+        {
+            var json = JsonSerializer.Serialize(request, JsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var requestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), "/v1/menu")
+            {
+                Content = content
+            };
+            var response = await _client.SendAsync(requestMessage);
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to update menu. Status: {response.StatusCode}, Response: {responseContent}");
+            }
+
+            var result = JsonSerializer.Deserialize<CreateMenuResponse>(responseContent, JsonOptions);
+            return result ?? throw new Exception("Failed to deserialize response");
+        }
+
         public async Task<List<Food>> GetAllFoodsAsync()
         {
             var response = await _client.GetAsync("/v1/food");
