@@ -11,10 +11,9 @@
         <!-- Global Navbar (always visible) -->
         <Border Grid.Row="0" Background="#3A8DFF" Height="50">
             <StackPanel Orientation="Horizontal" Margin="10">
-                <Button Content="Orders" Width="80" Margin="5" Click="NavigateOrders"/>
-                <Button Content="Manage foods" Width="80" Margin="5" Click="NavigateFoods"/>
-                <Button Content="Manage menus" Width="80" Margin="5" Click="NavigateMenus"/>
-                <Button Content="Export" Width="80" Margin="5" Click="NavigateExport"/>
+                <Button Content="Rendelések" Width="80" Margin="5" Click="NavigateOrders"/>
+                <Button Content="Ételek" Width="80" Margin="5" Click="NavigateFoods"/>
+                <Button Content="Menük" Width="80" Margin="5" Click="NavigateMenus"/>
             </StackPanel>
         </Border>
 

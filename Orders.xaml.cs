@@ -1,10 +1,22 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using menza_admin.Models;
+using Microsoft.Win32;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Grid;
+using Syncfusion.Pdf.Graphics;
+using Syncfusion.Drawing;
+using iTextSharp.text.pdf;
+using PdfPage = iTextSharp.text.pdf.PdfPage;
+using iTextSharp.text;
 
 namespace menza_admin
 {
@@ -130,7 +142,7 @@ namespace menza_admin
             await LoadOrdersForDate(_selectedDate);
         }
 
-        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
         {
             if (_orderItems.Count == 0)
             {
@@ -140,30 +152,90 @@ namespace menza_admin
 
             try
             {
-                // Create CSV content
-                var csv = "Food Name,Price,Quantity,Total Revenue\n";
-                foreach (var item in _orderItems)
-                {
-                    csv += $"\"{item.Name}\",{item.Price},{item.TodayQuantity},{item.TodayRevenue}\n";
-                }
+                LoadingPanel.Visibility = Visibility.Visible;
+                ExportButton.IsEnabled = false;
+                ErrorText.Text = "";
 
-                // Save to file
-                var dialog = new Microsoft.Win32.SaveFileDialog
+                var saveDialog = new SaveFileDialog
                 {
-                    FileName = $"Orders_{_selectedDate:yyyy-MM-dd}",
-                    DefaultExt = ".csv",
-                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*"
+                    FileName = $"Napi_Összesítés_{_selectedDate:yyyy-MM-dd}",
+                    DefaultExt = ".pdf",
+                    Filter = "PDF files (*.pdf)|*.pdf"
                 };
 
-                if (dialog.ShowDialog() == true)
+                if (saveDialog.ShowDialog() == true)
                 {
-                    System.IO.File.WriteAllText(dialog.FileName, csv);
-                    MessageBox.Show("Export completed successfully!", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+                    using (var document = new Syncfusion.Pdf.PdfDocument())
+                    {
+                        Syncfusion.Pdf.PdfPage page = document.Pages.Add();
+                        PdfGraphics graphics = page.Graphics;
+
+                        // Create fonts
+                        Syncfusion.Pdf.Graphics.PdfFont titleFont = new PdfStandardFont(PdfFontFamily.TimesRoman, 18, PdfFontStyle.Bold);
+                        Syncfusion.Pdf.Graphics.PdfFont normalFont = new PdfStandardFont(PdfFontFamily.TimesRoman, 12);
+
+                        // Add title
+                        graphics.DrawString($"Napi összesítés - {_selectedDate:yyyy.MM.dd}",
+                            titleFont, PdfBrushes.Black, new PointF(0, 0));
+
+                        // Create orders grid
+                        PdfGrid grid = new PdfGrid();
+                        grid.Columns.Add(4);
+                        grid.Headers.Add(1);
+
+                        // Style the grid
+                        grid.Style.Font = normalFont;
+                        
+                        // Set header values
+                        PdfGridRow header = grid.Headers[0];
+                        header.Cells[0].Value = "Étel neve";
+                        header.Cells[1].Value = "Ár (Ft)";
+                        header.Cells[2].Value = "Mennyiség";
+                        header.Cells[3].Value = "Összesen (Ft)";
+
+                        // Add data rows
+                        foreach (var order in _orderItems)
+                        {
+                            PdfGridRow row = grid.Rows.Add();
+                            row.Cells[0].Value = order.Name ?? "Unknown";
+                            row.Cells[1].Value = order.Price.ToString();
+                            row.Cells[2].Value = order.TodayQuantity.ToString();
+                            row.Cells[3].Value = order.TodayRevenue.ToString();
+                        }
+
+                        // Calculate totals
+                        int totalQuantity = _orderItems.Sum(x => x.TodayQuantity);
+                        int totalRevenue = _orderItems.Sum(x => x.TodayRevenue);
+
+                        // Draw the grid
+                        grid.Draw(page, new RectangleF(0, 50, page.Size.Width, 500));
+
+                        // Add totals at the bottom
+                        float yPos = 570; // 50 (grid Y) + 500 (grid height) + 20 (spacing)
+                        graphics.DrawString($"Összes rendelés: {totalQuantity}", 
+                            titleFont, PdfBrushes.Black, new PointF(0, yPos));
+                        graphics.DrawString($"Összes bevétel: {totalRevenue:N0} Ft", 
+                            titleFont, PdfBrushes.Black, new PointF(0, yPos + 30));
+
+                        // Save the document
+                        using (var stream = saveDialog.OpenFile())
+                        {
+                            document.Save(stream);
+                        }
+                    }
+
+                    MessageBox.Show("PDF sikeresen elkészítve!", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Export failed: {ex.Message}", "Export Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorText.Text = $"Export failed: {ex.Message}";
+                MessageBox.Show($"Export failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                LoadingPanel.Visibility = Visibility.Collapsed;
+                ExportButton.IsEnabled = true;
             }
         }
 
@@ -184,6 +256,22 @@ namespace menza_admin
         {
             int dayOfWeek = (int)date.DayOfWeek;
             return dayOfWeek == 0 ? 7 : dayOfWeek; // Convert Sunday from 0 to 7
+        }
+
+        // Helper method to handle encoding of text in PDF cells
+        private void AddCellWithEncoding(PdfPTable table, string text)
+        {
+            // Create a cell with proper encoding for Hungarian characters
+            var cell = new PdfPCell(new Phrase(text, FontFactory.GetFont(FontFactory.HELVETICA, BaseFont.IDENTITY_H, true, 12)));
+            table.AddCell(cell);
+        }
+
+        // Helper method to add cell with specific font
+        private void AddCellWithFont(iTextSharp.text.pdf.PdfPTable table, string text, iTextSharp.text.Font font)
+        {
+            var cell = new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(text, font));
+            cell.Padding = 5;
+            table.AddCell(cell);
         }
     }
 
