@@ -410,7 +410,8 @@
                                                     Cursor="Hand" 
                                                     Margin="0,0,6,0"
                                                     BorderThickness="0"
-                                                    Foreground="White">
+                                                    Foreground="White"
+                                                    Click="EditButton_Click">
                                                 <Button.Style>
                                                     <Style TargetType="Button">
                                                         <Setter Property="Background" Value="#2196F3"/>
