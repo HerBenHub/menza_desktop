@@ -1,0 +1,181 @@
+﻿<Page x:Class="menza_admin.ManageWeeklyMenu"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="Heti Menü Kezelése">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Heti Menü Kezelése" FontSize="24" FontWeight="Bold" Margin="0,0,0,10"/>
+            <TextBlock Text="Válasszon hetet és állítsa össze a napi menüket (hétfőtől péntekig)" 
+                       FontSize="14" Foreground="Gray"/>
+        </StackPanel>
+
+        <!-- Week Selection -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,20">
+            <TextBlock Text="Év:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox x:Name="YearTextBox" Width="80" Height="30" Text="2025" Margin="0,0,20,0"/>
+
+            <TextBlock Text="Hét:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <TextBox x:Name="WeekTextBox" Width="80" Height="30" Text="1" Margin="0,0,20,0"/>
+
+            <Button Content="Menü Betöltése" Width="120" Height="30" Click="LoadMenu_Click" Margin="0,0,10,0"/>
+            <Button Content="Új Menü" Width="120" Height="30" Click="NewMenu_Click"/>
+        </StackPanel>
+
+        <!-- Days Grid -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="DaysPanel">
+                <!-- Day 1 - Monday -->
+                <Border BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Hétfő" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <ItemsControl x:Name="MondayItems">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Price, StringFormat='{}{0} Ft'}" 
+                                                   VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        <Button Grid.Column="2" Content="Törlés" Click="RemoveFood_Click" 
+                                                Tag="1" CommandParameter="{Binding Id}" Margin="5,0,0,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="+ Étel Hozzáadása" Click="AddFood_Click" Tag="1" 
+                                Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Day 2 - Tuesday -->
+                <Border BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Kedd" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <ItemsControl x:Name="TuesdayItems">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Price, StringFormat='{}{0} Ft'}" 
+                                                   VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        <Button Grid.Column="2" Content="Törlés" Click="RemoveFood_Click" 
+                                                Tag="2" CommandParameter="{Binding Id}" Margin="5,0,0,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="+ Étel Hozzáadása" Click="AddFood_Click" Tag="2" 
+                                Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Day 3 - Wednesday -->
+                <Border BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Szerda" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <ItemsControl x:Name="WednesdayItems">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Price, StringFormat='{}{0} Ft'}" 
+                                                   VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        <Button Grid.Column="2" Content="Törlés" Click="RemoveFood_Click" 
+                                                Tag="3" CommandParameter="{Binding Id}" Margin="5,0,0,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="+ Étel Hozzáadása" Click="AddFood_Click" Tag="3" 
+                                Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Day 4 - Thursday -->
+                <Border BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Csütörtök" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <ItemsControl x:Name="ThursdayItems">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Price, StringFormat='{}{0} Ft'}" 
+                                                   VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        <Button Grid.Column="2" Content="Törlés" Click="RemoveFood_Click" 
+                                                Tag="4" CommandParameter="{Binding Id}" Margin="5,0,0,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="+ Étel Hozzáadása" Click="AddFood_Click" Tag="4" 
+                                Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Day 5 - Friday -->
+                <Border BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,15" Padding="15">
+                    <StackPanel>
+                        <TextBlock Text="Péntek" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                        <ItemsControl x:Name="FridayItems">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,5">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="100"/>
+                                            <ColumnDefinition Width="80"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Price, StringFormat='{}{0} Ft'}" 
+                                                   VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        <Button Grid.Column="2" Content="Törlés" Click="RemoveFood_Click" 
+                                                Tag="5" CommandParameter="{Binding Id}" Margin="5,0,0,0"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="+ Étel Hozzáadása" Click="AddFood_Click" Tag="5" 
+                                Margin="0,10,0,0" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Save Button -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <TextBlock x:Name="StatusText" VerticalAlignment="Center" Margin="0,0,20,0" 
+                       Foreground="Green" FontWeight="Bold"/>
+            <Button Content="Mentés" Width="150" Height="40" Click="SaveMenu_Click" 
+                    Background="#4CAF50" Foreground="White" FontSize="14" FontWeight="Bold"/>
+        </StackPanel>
+    </Grid>
+</Page>

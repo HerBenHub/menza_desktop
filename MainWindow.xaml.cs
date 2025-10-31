@@ -28,7 +28,13 @@ namespace menza_admin
         {
             MainFrame.Navigate(new ManageFoods());
         }
+
+        private void NavigateWeeklyMenu(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ManageWeeklyMenu());
+        }
     }
 }
+
 
 
