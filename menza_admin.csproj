@@ -113,6 +113,7 @@
     <Compile Include="Export.xaml.cs">
       <DependentUpon>Export.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\BigIntConverter.cs" />
     <Compile Include="ManageFoods.xaml.cs">
       <DependentUpon>ManageFoods.xaml</DependentUpon>
     </Compile>

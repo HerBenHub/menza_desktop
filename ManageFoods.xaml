@@ -5,8 +5,204 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:menza_admin"
       mc:Ignorable="d"
-      Title="ManageFoods" Height="450" Width="800">
-    <Grid>
-        
+      Title="ManageFoods"
+      d:DesignHeight="800" d:DesignWidth="1200">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="Manage Foods" FontSize="28" FontWeight="Bold" Margin="0,0,0,10"/>
+            <Button x:Name="AddFoodButton" Content="➕ Add New Food" 
+                    Width="150" Height="40" 
+                    HorizontalAlignment="Left"
+                    Background="#4CAF50" Foreground="White" 
+                    FontSize="14" FontWeight="Bold"
+                    Click="AddFoodButton_Click"
+                    Cursor="Hand">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="#4CAF50"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            CornerRadius="5" 
+                                            Padding="10,5">
+                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                        VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#45a049"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+
+        <!-- Foods List Section -->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Loading Indicator -->
+            <TextBlock x:Name="LoadingText" Grid.Row="0" Text="Loading foods..." 
+                       FontSize="16" HorizontalAlignment="Center" 
+                       Visibility="Collapsed" Margin="0,20"/>
+
+            <!-- Foods DataGrid -->
+            <DataGrid x:Name="FoodsDataGrid" Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      AlternatingRowBackground="#F5F5F5"
+                      GridLinesVisibility="Horizontal"
+                      HeadersVisibility="Column"
+                      RowHeight="60"
+                      FontSize="14">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60"/>
+                    <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="*" MinWidth="150"/>
+                    <DataGridTextColumn Header="Leírás" Binding="{Binding Description}" Width="2*" MinWidth="200"/>
+                    <DataGridTextColumn Header="Ár (Ft)" Binding="{Binding Price}" Width="100"/>
+                    <DataGridTextColumn Header="Allergének" Binding="{Binding AllergensDisplay}" Width="150"/>
+                    <DataGridTemplateColumn Header="Műveletek" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="🗑️ Delete" 
+                                        Background="#f44336" 
+                                        Foreground="White"
+                                        Padding="10,5"
+                                        FontWeight="Bold"
+                                        Click="DeleteFood_Click"
+                                        Tag="{Binding Id}"
+                                        Cursor="Hand">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="Background" Value="#f44336"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border Background="{TemplateBinding Background}" 
+                                                                CornerRadius="3" 
+                                                                Padding="{TemplateBinding Padding}">
+                                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                                            VerticalAlignment="Center"/>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#da190b"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Add/Edit Food Dialog Overlay -->
+        <Grid x:Name="DialogOverlay" Grid.Row="0" Grid.RowSpan="2" Background="#CC000000" Visibility="Collapsed">
+            <Border Background="White" 
+                    CornerRadius="10" 
+                    Width="600" 
+                    MaxHeight="700"
+                    Padding="30"
+                    VerticalAlignment="Center">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="Add New Food" FontSize="24" FontWeight="Bold" Margin="0,0,0,20"/>
+
+                        <TextBlock Text="Name:" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="FoodNameTextBox" Height="35" FontSize="14" Margin="0,0,0,15" Padding="5"/>
+
+                        <TextBlock Text="Description:" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="FoodDescriptionTextBox" Height="80" FontSize="14" 
+                                 TextWrapping="Wrap" AcceptsReturn="True" 
+                                 VerticalScrollBarVisibility="Auto" Margin="0,0,0,15" Padding="5"/>
+
+                        <TextBlock Text="Price (Ft):" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="FoodPriceTextBox" Height="35" FontSize="14" Margin="0,0,0,15" Padding="5"/>
+
+                        <TextBlock Text="Allergens (comma-separated IDs):" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <TextBox x:Name="FoodAllergensTextBox" Height="35" FontSize="14" 
+                                 Margin="0,0,0,15" Padding="5"
+                                 ToolTip="Enter allergen IDs separated by commas, e.g., 1,2,3"/>
+
+                        <TextBlock Text="Image:" FontSize="14" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,15">
+                            <Button x:Name="SelectImageButton" Content="Select Image" 
+                                    Width="120" Height="35" 
+                                    Click="SelectImage_Click" Margin="0,0,10,0"/>
+                            <TextBlock x:Name="SelectedImageText" Text="No image selected" 
+                                       VerticalAlignment="Center" FontSize="12" Foreground="Gray"/>
+                        </StackPanel>
+
+                        <!-- Image Preview -->
+                        <Border x:Name="ImagePreviewBorder" 
+                                BorderBrush="#DDD" 
+                                BorderThickness="1" 
+                                Height="200" 
+                                Margin="0,0,0,20"
+                                Visibility="Collapsed">
+                            <Image x:Name="ImagePreview" Stretch="Uniform"/>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="CancelButton" Content="Cancel" 
+                                    Width="100" Height="40" 
+                                    Margin="0,0,10,0"
+                                    Click="CancelDialog_Click"/>
+                            <Button x:Name="SaveFoodButton" Content="Save Food" 
+                                    Width="120" Height="40" 
+                                    Background="#4CAF50" Foreground="White" 
+                                    FontWeight="Bold"
+                                    Click="SaveFood_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#4CAF50"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" 
+                                                            CornerRadius="5" 
+                                                            Padding="10,5">
+                                                        <ContentPresenter HorizontalAlignment="Center" 
+                                                                        VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#45a049"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
     </Grid>
 </Page>
