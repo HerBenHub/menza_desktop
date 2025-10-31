@@ -1,10 +1,4 @@
-﻿using menza_admin.Models;
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
-
-//Ez a frontend logikáját tarta
+﻿using System.Windows;
 
 namespace menza_admin
 {
@@ -30,13 +24,7 @@ namespace menza_admin
         {
             MainFrame.Navigate(new ManageFoods());
         }
-        
-        private void NavigateExport(object sender, RoutedEventArgs e)
-        {
-            MainFrame.Navigate(new Export());
-        }
     }
-
 }
 
 
