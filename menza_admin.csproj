@@ -110,6 +110,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Export.xaml.cs">
+      <DependentUpon>Export.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ManageFoods.xaml.cs">
+      <DependentUpon>ManageFoods.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ManageMenus.xaml.cs">
+      <DependentUpon>ManageMenus.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\CreateFoodRequest.cs" />
     <Compile Include="Models\CreateMenuRequest.cs" />
     <Compile Include="Models\CreateMenuResponse.cs" />
@@ -118,6 +127,7 @@
     <Compile Include="Models\OrdersByWeekRequest.cs" />
     <Compile Include="Models\OrderSummary.cs" />
     <Compile Include="Services\Api.cs" />
+    <Page Include="Export.xaml" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -130,6 +140,8 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ManageFoods.xaml" />
+    <Page Include="ManageMenus.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
