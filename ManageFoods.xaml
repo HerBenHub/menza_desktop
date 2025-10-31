@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:menza_admin"
       mc:Ignorable="d"
-      Title="ManageFoods" Height="900" Width="1600">
+      Title="ManageFoods" Height="1000" Width="1850">
     <Grid Background="#F5F5F5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -56,6 +56,88 @@
                             <StackPanel Orientation="Vertical" Margin="0,0,0,18">
                                 <TextBlock Text="Ár (HUF)" FontWeight="Bold" FontSize="14" Foreground="#333333" Margin="0,0,0,8"/>
                                 <TextBox x:Name="PriceTextBox" Height="45" Padding="12" FontSize="15" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            </StackPanel>
+
+                            <!-- Image Upload -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,18">
+                                <TextBlock Text="Kép" FontWeight="Bold" FontSize="14" Foreground="#333333" Margin="0,0,0,8"/>
+                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="15" Background="White">
+                                    <StackPanel>
+                                        <!-- Image Preview -->
+                                        <Border x:Name="ImagePreviewBorder" Height="200" Background="#F5F5F5" 
+                                                BorderThickness="2" BorderBrush="#E0E0E0" CornerRadius="4" 
+                                                Margin="0,0,0,15" Visibility="Collapsed">
+                                            <Grid>
+                                                <Image x:Name="ImagePreview" Stretch="Uniform" Margin="10"/>
+                                                <Button x:Name="RemoveImageButton" Content="✕" 
+                                                        Width="32" Height="32" 
+                                                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                                                        Margin="8" Background="#F44336" Foreground="White"
+                                                        FontSize="16" FontWeight="Bold" Cursor="Hand"
+                                                        Click="RemoveImageButton_Click" BorderThickness="0">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="{TemplateBinding Background}" 
+                                                                                CornerRadius="16" BorderThickness="0">
+                                                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                                                              VerticalAlignment="Center"/>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="#D32F2F"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                        
+                                        <!-- Upload Button -->
+                                        <Button x:Name="UploadImageButton" Height="45" 
+                                                Background="#FF9800" Foreground="White" 
+                                                FontSize="14" FontWeight="SemiBold" 
+                                                Content="📷 Kép Feltöltése" 
+                                                Cursor="Hand"
+                                                Click="UploadImageButton_Click" 
+                                                BorderThickness="0">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Background" Value="#FF9800"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}" 
+                                                                        CornerRadius="4" BorderThickness="0">
+                                                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                                                      VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#F57C00"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" Value="#EF6C00"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                        
+                                        <TextBlock x:Name="ImageFileNameText" Text="Nincs kiválasztott kép" 
+                                                   FontSize="12" Foreground="#757575" 
+                                                   Margin="0,8,0,0" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
 
                             <!-- Allergens -->
@@ -160,30 +242,53 @@
                             </Style>
                         </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="165" IsReadOnly="True">
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="120" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
                                         <Setter Property="Margin" Value="14,0,10,0"/>
-                                        <Setter Property="FontSize" Value="15"/>
+                                        <Setter Property="FontSize" Value="14"/>
                                         <Setter Property="Foreground" Value="#757575"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="220" IsReadOnly="True">
+                            
+                            <!-- Image Column -->
+                            <DataGridTemplateColumn Header="Kép" Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1" 
+                                                CornerRadius="4" Margin="8" Width="70" Height="50">
+                                            <Image Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality">
+                                                <Image.Source>
+                                                    <MultiBinding Mode="OneWay">
+                                                        <MultiBinding.Converter>
+                                                            <local:FoodImageUrlConverter/>
+                                                        </MultiBinding.Converter>
+                                                        <Binding Path="Id" Mode="OneWay"/>
+                                                        <Binding Path="PictureId" Mode="OneWay"/>
+                                                    </MultiBinding>
+                                                </Image.Source>
+                                            </Image>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="180" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="HorizontalAlignment" Value="Left"/>
                                         <Setter Property="Margin" Value="14,0,10,0"/>
                                         <Setter Property="FontWeight" Value="SemiBold"/>
-                                        <Setter Property="FontSize" Value="15"/>
+                                        <Setter Property="FontSize" Value="14"/>
                                         <Setter Property="Foreground" Value="#212121"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTemplateColumn Header="Leírás" Width="*" MinWidth="280">
+                            <DataGridTemplateColumn Header="Leírás" Width="*" MinWidth="250">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button x:Name="DescriptionButton" 
@@ -234,19 +339,44 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Ár (HUF)" Binding="{Binding Price}" Width="100" IsReadOnly="True">
+                            <DataGridTextColumn Header="Ár (HUF)" Binding="{Binding Price}" Width="90" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="HorizontalAlignment" Value="Right"/>
                                         <Setter Property="Margin" Value="10,0,14,0"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
-                                        <Setter Property="FontSize" Value="16"/>
+                                        <Setter Property="FontSize" Value="15"/>
                                         <Setter Property="Foreground" Value="#2E7D32"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTemplateColumn Header="Műveletek" Width="200">
+                            
+                            <!-- Allergens Column -->
+                            <DataGridTemplateColumn Header="Allergének" Width="170">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ItemsControl ItemsSource="{Binding Allergens}" Margin="10,5">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel Orientation="Horizontal"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#FFF3E0" BorderBrush="#FFB74D" BorderThickness="1" 
+                                                            CornerRadius="12" Padding="8,4" Margin="2">
+                                                        <TextBlock Text="{Binding Name}" FontSize="11" 
+                                                                   Foreground="#E65100" FontWeight="SemiBold"/>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTemplateColumn Header="Műveletek" Width="180">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">

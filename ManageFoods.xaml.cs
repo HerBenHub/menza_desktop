@@ -1,20 +1,90 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Media.Imaging;
 using menza_admin.Models;
 using menza_admin.Services;
 
 namespace menza_admin
 {
+    /// <summary>
+    /// Converts Food ID and PictureId to CDN image URL
+    /// </summary>
+    public class FoodImageUrlConverter : IMultiValueConverter
+    {
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (values == null || values.Length < 2)
+                return null;
+
+            if (values[0] == null || values[1] == null)
+                return null;
+
+            var foodId = values[0].ToString();
+            var pictureId = values[1].ToString();
+
+            if (string.IsNullOrEmpty(pictureId) || pictureId == "placeholder_img_123")
+                return null;
+
+            try
+            {
+                // Build the CDN URL: https://cdn-canteen.kenderesi.hu/food/{foodId}/{pictureId}.webp
+                string imageUrl = $"https://cdn-canteen.kenderesi.hu/food/{foodId}/{pictureId}.webp";
+                System.Diagnostics.Debug.WriteLine($"Loading image: {imageUrl}");
+
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.UriSource = new Uri(imageUrl, UriKind.Absolute);
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.CreateOptions = BitmapCreateOptions.IgnoreColorProfile;
+                bitmap.DecodePixelWidth = 100;
+                
+                // This is key - handle download completion
+                bitmap.DownloadCompleted += (s, e) =>
+                {
+                    System.Diagnostics.Debug.WriteLine($"Successfully loaded: {imageUrl}");
+                };
+                bitmap.DownloadFailed += (s, e) =>
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to load: {imageUrl} - {e.ErrorException?.Message}");
+                };
+                
+                bitmap.EndInit();
+                
+                // Don't freeze immediately - let it download first
+                if (bitmap.IsDownloading)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Image is downloading: {imageUrl}");
+                }
+                
+                return bitmap;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Failed to load image: {ex.Message}");
+                return null;
+            }
+        }
+
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public partial class ManageFoods : Page
     {
         private ObservableCollection<Food> foodsList;
         private Dictionary<string, long> allergenMap; // Map allergen names to IDs
+        private byte[] selectedImageData;
+        private string selectedImageFileName;
 
         public ManageFoods()
         {
@@ -27,18 +97,17 @@ namespace menza_admin
 
         private void InitializeAllergenMap()
         {
-            // Map UI allergen names to their database IDs
-            // TODO: These IDs should be fetched from the API, but for now using hardcoded values
+            // Map UI allergen names to their database IDs (from the actual database)
             allergenMap = new Dictionary<string, long>
             {
-                { "gluten", 1 },
-                { "dairy", 2 },
-                { "nuts", 3 },
-                { "peanuts", 4 },
-                { "sesame", 5 },
-                { "soy", 6 },
-                { "fish", 7 },
-                { "shellfish", 8 }
+                { "gluten", 21936604557870080 },      // Glutén
+                { "dairy", 21936604562064384 },       // Tejtermék
+                { "nuts", 21936604562064385 },        // Dióféle
+                { "peanuts", 21936604562064386 },     // Tojás (keeping old key name for now)
+                { "soy", 21936604562064387 },         // Szója
+                { "fish", 21936604562064388 },        // Hal
+                { "shellfish", 21936604562064389 },   // Rákféle
+                { "sesame", 21936604562064390 }       // Szezám
             };
         }
 
@@ -104,6 +173,7 @@ namespace menza_admin
                 // Debug: Show what we're about to send
                 var debugInfo = $"Sending to API:\nName: {foodData.name}\nPrice: {foodData.price}\nAllergen IDs: {string.Join(", ", allergenIds)}";
                 System.Diagnostics.Debug.WriteLine(debugInfo);
+                System.Diagnostics.Debug.WriteLine($"Allergen count being sent: {allergenIds.Count}");
 
                 // Send as multipart/form-data with file
                 using (var multipartContent = new MultipartFormDataContent())
@@ -112,11 +182,47 @@ namespace menza_admin
                     string jsonData = JsonSerializer.Serialize(foodData);
                     multipartContent.Add(new StringContent(jsonData), "data");
 
-                    // Add placeholder image file (1x1 transparent PNG)
-                    byte[] placeholderImage = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
-                    var imageContent = new ByteArrayContent(placeholderImage);
-                    imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("image/png");
-                    multipartContent.Add(imageContent, "file", "placeholder.png");
+                    // Add image file - use uploaded image if available, otherwise use placeholder
+                    byte[] imageData;
+                    string fileName;
+                    string contentType;
+
+                    if (selectedImageData != null && selectedImageData.Length > 0)
+                    {
+                        // Use uploaded image
+                        imageData = selectedImageData;
+                        fileName = selectedImageFileName ?? "uploaded_image.jpg";
+                        
+                        // Determine content type from file extension
+                        string extension = System.IO.Path.GetExtension(fileName).ToLower();
+                        if (extension == ".jpg" || extension == ".jpeg")
+                        {
+                            contentType = "image/jpeg";
+                        }
+                        else if (extension == ".png")
+                        {
+                            contentType = "image/png";
+                        }
+                        else if (extension == ".bmp")
+                        {
+                            contentType = "image/bmp";
+                        }
+                        else
+                        {
+                            contentType = "image/jpeg";
+                        }
+                    }
+                    else
+                    {
+                        // Use placeholder image
+                        imageData = Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+                        fileName = "placeholder.png";
+                        contentType = "image/png";
+                    }
+
+                    var imageContent = new ByteArrayContent(imageData);
+                    imageContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
+                    multipartContent.Add(imageContent, "file", fileName);
 
                     using (var httpClient = new HttpClient())
                     {
@@ -131,11 +237,24 @@ namespace menza_admin
                             throw new Exception($"Failed to create food. Status: {response.StatusCode}\nResponse: {responseText}");
                         }
 
+                        // Debug: Show the API response
+                        System.Diagnostics.Debug.WriteLine($"API Response: {responseText}");
+
                         // Deserialize the created food
                         var createdFood = JsonSerializer.Deserialize<Food>(responseText, Api.JsonOptions);
                         if (createdFood == null)
                         {
                             throw new Exception("Failed to deserialize response");
+                        }
+                        
+                        // Debug: Check allergens in deserialized food
+                        System.Diagnostics.Debug.WriteLine($"Created food has {createdFood.Allergens?.Count ?? 0} allergens");
+                        if (createdFood.Allergens != null)
+                        {
+                            foreach (var allergen in createdFood.Allergens)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"  - Allergen: {allergen.Name} (ID: {allergen.Id})");
+                            }
                         }
                         
                         foodsList.Add(createdFood);
@@ -180,6 +299,13 @@ namespace menza_admin
             SoyCheckBox.IsChecked = false;
             FishCheckBox.IsChecked = false;
             ShellfishCheckBox.IsChecked = false;
+            
+            // Clear image
+            selectedImageData = null;
+            selectedImageFileName = null;
+            ImagePreview.Source = null;
+            ImagePreviewBorder.Visibility = Visibility.Collapsed;
+            ImageFileNameText.Text = "Nincs kiválasztott kép";
         }
 
         private async void LoadFoodsAsync()
@@ -188,10 +314,20 @@ namespace menza_admin
             {
                 var foods = await App.Api.GetAllFoodsAsync();
                 foodsList.Clear();
+                
+                System.Diagnostics.Debug.WriteLine($"Loaded {foods.Count} foods from API");
+                
                 foreach (var food in foods)
                 {
+                    System.Diagnostics.Debug.WriteLine($"Food: {food.Name}, Allergens: {food.Allergens?.Count ?? 0}");
                     foodsList.Add(food);
                 }
+                
+                // Force UI update to trigger image loading
+                await System.Windows.Threading.Dispatcher.CurrentDispatcher.InvokeAsync(() =>
+                {
+                    FoodsDataGrid.Items.Refresh();
+                }, System.Windows.Threading.DispatcherPriority.Render);
             }
             catch (Exception ex)
             {
@@ -286,6 +422,50 @@ namespace menza_admin
         private void CloseDescriptionButton_Click(object sender, RoutedEventArgs e)
         {
             DescriptionPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void UploadImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openFileDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "Válasszon egy képet",
+                    Filter = "Képfájlok (*.jpg;*.jpeg;*.png;*.bmp)|*.jpg;*.jpeg;*.png;*.bmp|Minden fájl (*.*)|*.*",
+                    FilterIndex = 1
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    // Read the image file
+                    selectedImageFileName = System.IO.Path.GetFileName(openFileDialog.FileName);
+                    selectedImageData = System.IO.File.ReadAllBytes(openFileDialog.FileName);
+
+                    // Display preview
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(openFileDialog.FileName);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+
+                    ImagePreview.Source = bitmap;
+                    ImagePreviewBorder.Visibility = Visibility.Visible;
+                    ImageFileNameText.Text = selectedImageFileName;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hiba a kép betöltése során:\n\n{ex.Message}", "Hiba", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void RemoveImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            selectedImageData = null;
+            selectedImageFileName = null;
+            ImagePreview.Source = null;
+            ImagePreviewBorder.Visibility = Visibility.Collapsed;
+            ImageFileNameText.Text = "Nincs kiválasztott kép";
         }
     }
 }
