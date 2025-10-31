@@ -33,7 +33,7 @@ namespace menza_admin
         private void InitializeConfiguration()
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-            
+
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(baseDir)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -44,7 +44,7 @@ namespace menza_admin
         private void InitializeApi()
         {
             var baseUrl = Configuration["ApiBaseUrl"];
-            
+
             if (string.IsNullOrWhiteSpace(baseUrl))
             {
                 throw new InvalidOperationException(
