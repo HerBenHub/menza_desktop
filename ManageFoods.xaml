@@ -5,24 +5,25 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:menza_admin"
       mc:Ignorable="d"
-      Title="ManageFoods" Height="800" Width="1200">
+      Title="ManageFoods">
     <Grid Background="#F5F5F5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Header -->
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="20">
-            <TextBlock Text="Ételek Kezelése" FontSize="32" FontWeight="Bold" Foreground="#333333"/>
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="20,15,20,10">
+            <TextBlock Text="Ételek Kezelése" FontSize="28" FontWeight="Bold" Foreground="#333333"/>
             <TextBlock Text="Adjon hozzá, szerkesszen és kezeljen ételeket" FontSize="14" Foreground="#666666" Margin="0,5,0,0"/>
         </StackPanel>
 
         <!-- Main Content -->
-        <Grid Grid.Row="1" Margin="20,0,20,20">
+        <Grid Grid.Row="1" Margin="20,0,20,15">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400"/>
-                <ColumnDefinition Width="*" MinWidth="300"/>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="*" MinWidth="800"/>
             </Grid.ColumnDefinitions>
 
             <!-- Form Section -->
@@ -33,51 +34,133 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#2196F3" CornerRadius="8,8,0,0" Padding="15">
-                        <TextBlock Text="Új Étel Hozzáadása" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                    <Border Grid.Row="0" Background="#2196F3" CornerRadius="8,8,0,0" Padding="12">
+                        <TextBlock Text="Új Étel Hozzáadása" FontSize="16" FontWeight="Bold" Foreground="White"/>
                     </Border>
 
                     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="15">
                         <StackPanel Orientation="Vertical">
                             <!-- Food Name -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
-                                <TextBlock Text="Étel Neve" FontWeight="Bold" Foreground="#333333"/>
-                                <TextBox x:Name="FoodNameTextBox" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Étel Neve" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <TextBox x:Name="FoodNameTextBox" Height="38" Padding="10" FontSize="13" BorderThickness="1" BorderBrush="#DDDDDD"/>
                             </StackPanel>
 
                             <!-- Description -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
-                                <TextBlock Text="Leírás" FontWeight="Bold" Foreground="#333333"/>
-                                <TextBox x:Name="DescriptionTextBox" Height="80" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Leírás" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <TextBox x:Name="DescriptionTextBox" Height="80" Padding="10" FontSize="13" BorderThickness="1" BorderBrush="#DDDDDD" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" AcceptsReturn="True"/>
                             </StackPanel>
 
                             <!-- Price -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
-                                <TextBlock Text="Ár (HUF)" FontWeight="Bold" Foreground="#333333"/>
-                                <TextBox x:Name="PriceTextBox" Height="40" Padding="10" FontSize="14" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Ár (HUF)" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <TextBox x:Name="PriceTextBox" Height="38" Padding="10" FontSize="13" BorderThickness="1" BorderBrush="#DDDDDD"/>
+                            </StackPanel>
+
+                            <!-- Image Upload -->
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Kép" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,6"/>
+                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="12" Background="White">
+                                    <StackPanel>
+                                        <!-- Image Preview -->
+                                        <Border x:Name="ImagePreviewBorder" Height="150" Background="#F5F5F5" 
+                                                BorderThickness="2" BorderBrush="#E0E0E0" CornerRadius="4" 
+                                                Margin="0,0,0,10" Visibility="Collapsed">
+                                            <Grid>
+                                                <Image x:Name="ImagePreview" Stretch="Uniform" Margin="8"/>
+                                                <Button x:Name="RemoveImageButton" Content="✕" 
+                                                        Width="28" Height="28" 
+                                                        HorizontalAlignment="Right" VerticalAlignment="Top" 
+                                                        Margin="6" Background="#F44336" Foreground="White"
+                                                        FontSize="14" FontWeight="Bold" Cursor="Hand"
+                                                        Click="RemoveImageButton_Click" BorderThickness="0">
+                                                    <Button.Style>
+                                                        <Style TargetType="Button">
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border Background="{TemplateBinding Background}" 
+                                                                                CornerRadius="14" BorderThickness="0">
+                                                                            <ContentPresenter HorizontalAlignment="Center" 
+                                                                                              VerticalAlignment="Center"/>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Style.Triggers>
+                                                                <Trigger Property="IsMouseOver" Value="True">
+                                                                    <Setter Property="Background" Value="#D32F2F"/>
+                                                                </Trigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                        
+                                        <!-- Upload Button -->
+                                        <Button x:Name="UploadImageButton" Height="38" 
+                                                Background="#FF9800" Foreground="White" 
+                                                FontSize="13" FontWeight="SemiBold" 
+                                                Content="📷 Kép Feltöltése" 
+                                                Cursor="Hand"
+                                                Click="UploadImageButton_Click" 
+                                                BorderThickness="0">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Background" Value="#FF9800"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}" 
+                                                                        CornerRadius="4" BorderThickness="0">
+                                                                    <ContentPresenter HorizontalAlignment="Center" 
+                                                                                      VerticalAlignment="Center"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#F57C00"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" Value="#EF6C00"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                        
+                                        <TextBlock x:Name="ImageFileNameText" Text="Nincs kiválasztott kép" 
+                                                   FontSize="11" Foreground="#757575" 
+                                                   Margin="0,6,0,0" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
                             </StackPanel>
 
                             <!-- Allergens -->
-                            <StackPanel Orientation="Vertical" Margin="0,0,0,15">
-                                <TextBlock Text="Allergének" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,10"/>
-                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="10" Background="White">
+                            <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+                                <TextBlock Text="Allergének" FontWeight="Bold" FontSize="13" Foreground="#333333" Margin="0,0,0,8"/>
+                                <Border BorderThickness="1" BorderBrush="#DDDDDD" Padding="12" Background="White">
                                     <StackPanel>
-                                        <CheckBox x:Name="GlutenCheckBox" Content="Glutén" Margin="0,5,0,5" FontSize="14"/>
-                                        <CheckBox x:Name="DairyCheckBox" Content="Tejtermék" Margin="0,5,0,5" FontSize="14"/>
-                                        <CheckBox x:Name="NutsCheckBox" Content="Dió" Margin="0,5,0,5" FontSize="14"/>
-                                        <CheckBox x:Name="PeanutsCheckBox" Content="Mogyoró" Margin="0,5,0,5" FontSize="14"/>
-                                        <CheckBox x:Name="SesameCheckBox" Content="Szezám" Margin="0,5,0,5" FontSize="14"/>
-                                        <CheckBox x:Name="SoyCheckBox" Content="Szóya" Margin="0,5,0,5" FontSize="14"/>
-                                        <CheckBox x:Name="FishCheckBox" Content="Hal" Margin="0,5,0,5" FontSize="14"/>
-                                        <CheckBox x:Name="ShellfishCheckBox" Content="Rák" Margin="0,5,0,5" FontSize="14"/>
+                                        <CheckBox x:Name="GlutenCheckBox" Content="Glutén" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="DairyCheckBox" Content="Tejtermék" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="NutsCheckBox" Content="Dió" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="PeanutsCheckBox" Content="Mogyoró" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="SesameCheckBox" Content="Szezám" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="SoyCheckBox" Content="Szóya" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="FishCheckBox" Content="Hal" Margin="0,4,0,4" FontSize="13"/>
+                                        <CheckBox x:Name="ShellfishCheckBox" Content="Rák" Margin="0,4,0,4" FontSize="13"/>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
 
                             <!-- Action Buttons -->
-                            <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
-                                <Button x:Name="AddFoodButton" Height="45" Background="#2196F3" Foreground="White" FontSize="14" FontWeight="Bold" Content="Étel Hozzáadása" Cursor="Hand" HorizontalAlignment="Stretch" Margin="0,0,10,0"/>
-                                <Button x:Name="ClearButton" Height="45" Background="#9E9E9E" Foreground="White" FontSize="14" FontWeight="Bold" Content="Törlés" Cursor="Hand" HorizontalAlignment="Stretch"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,15,0,0">
+                                <Button x:Name="AddFoodButton" Height="42" Background="#2196F3" Foreground="White" FontSize="13" FontWeight="Bold" Content="Étel Hozzáadása" Cursor="Hand" HorizontalAlignment="Stretch" Margin="0,0,8,0"/>
+                                <Button x:Name="ClearButton" Height="42" Background="#9E9E9E" Foreground="White" FontSize="13" FontWeight="Bold" Content="Törlés" Cursor="Hand" HorizontalAlignment="Stretch"/>
                             </StackPanel>
                         </StackPanel>
                     </ScrollViewer>
@@ -92,30 +175,301 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <Border Grid.Row="0" Background="#4CAF50" CornerRadius="8,8,0,0" Padding="15">
+                    <Border Grid.Row="0" Background="#4CAF50" CornerRadius="8,8,0,0" Padding="12">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Ételek Listája" FontSize="18" FontWeight="Bold" Foreground="White"/>
-                            <TextBox Grid.Column="1" x:Name="SearchTextBox" Width="250" Height="35" Padding="10" FontSize="12" BorderThickness="0" Background="White" Foreground="#333333" HorizontalAlignment="Right"/>
+                            <TextBlock Grid.Column="0" Text="Ételek Listája" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                            <Grid Grid.Column="1" HorizontalAlignment="Right">
+                                <TextBox x:Name="SearchTextBox" Width="200" Height="32" Padding="8" FontSize="12" 
+                                         BorderThickness="0" Background="White" Foreground="#333333"/>
+                                <TextBlock Text="🔍 Keresés..." FontSize="12" Foreground="#999999" 
+                                           IsHitTestVisible="False" VerticalAlignment="Center" Margin="10,0,0,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=SearchTextBox}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
                         </Grid>
                     </Border>
 
                     <!-- Foods DataGrid -->
-                    <DataGrid Grid.Row="1" x:Name="FoodsDataGrid" Margin="15" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" BorderThickness="1" BorderBrush="#DDDDDD">
+                    <DataGrid Grid.Row="1" x:Name="FoodsDataGrid" Margin="12" 
+                              AutoGenerateColumns="False" 
+                              CanUserAddRows="False" 
+                              CanUserDeleteRows="False" 
+                              BorderThickness="1" 
+                              BorderBrush="#CCCCCC" 
+                              RowHeight="55" 
+                              HeadersVisibility="Column" 
+                              GridLinesVisibility="All"
+                              VerticalGridLinesBrush="#E0E0E0"
+                              HorizontalGridLinesBrush="#E0E0E0"
+                              AlternatingRowBackground="#FAFAFA" 
+                              Background="White" 
+                              RowBackground="White"
+                              SelectionMode="Single"
+                              SelectionUnit="FullRow">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                                <Setter Property="Foreground" Value="#424242"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontSize" Value="13"/>
+                                <Setter Property="Padding" Value="10,10"/>
+                                <Setter Property="BorderThickness" Value="0,0,1,2"/>
+                                <Setter Property="BorderBrush" Value="#CCCCCC"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                                <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#E3F2FD"/>
+                                        <Setter Property="Foreground" Value="#333333"/>
+                                        <Setter Property="BorderBrush" Value="#90CAF9"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.CellStyle>
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Setter Property="BorderThickness" Value="0"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="120" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Leírás" Binding="{Binding Description}" Width="150" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Ár (HUF)" Binding="{Binding Price}" Width="80" IsReadOnly="True"/>
-                            <DataGridTemplateColumn Header="Műveletek" Width="120">
+                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="135" IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="Margin" Value="10,0,8,0"/>
+                                        <Setter Property="FontSize" Value="11"/>
+                                        <Setter Property="Foreground" Value="#757575"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            
+                            <!-- Image Column -->
+                            <DataGridTemplateColumn Header="Kép" Width="85">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Button Background="#2196F3" Foreground="White" Padding="8" FontSize="12" FontWeight="Bold" Content="Szerkesztés" Cursor="Hand" Margin="0,0,5,0"/>
-                                            <Button Background="#F44336" Foreground="White" Padding="8" FontSize="12" FontWeight="Bold" Content="Törlés" Cursor="Hand"/>
+                                        <Border Background="#F5F5F5" BorderBrush="#E0E0E0" BorderThickness="1" 
+                                                CornerRadius="4" Margin="8,5" Width="60" Height="45">
+                                            <Image Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality">
+                                                <Image.Source>
+                                                    <MultiBinding Mode="OneWay">
+                                                        <MultiBinding.Converter>
+                                                            <local:FoodImageUrlConverter/>
+                                                        </MultiBinding.Converter>
+                                                        <Binding Path="Id" Mode="OneWay"/>
+                                                        <Binding Path="PictureId" Mode="OneWay"/>
+                                                    </MultiBinding>
+                                                </Image.Source>
+                                            </Image>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTextColumn Header="Név" Binding="{Binding Name}" Width="145" IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        <Setter Property="Margin" Value="10,0,8,0"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="Foreground" Value="#212121"/>
+                                        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTemplateColumn Header="Leírás" Width="1.5*" MinWidth="250">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button x:Name="DescriptionButton" 
+                                                Click="DescriptionButton_Click"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Center"
+                                                Height="40"
+                                                Margin="6,5"
+                                                Padding="10,8"
+                                                Cursor="Hand"
+                                                Background="Transparent"
+                                                BorderBrush="#E0E0E0"
+                                                BorderThickness="1">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Background" Value="Transparent"/>
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border Background="{TemplateBinding Background}" 
+                                                                        BorderBrush="{TemplateBinding BorderBrush}"
+                                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                                        CornerRadius="3"
+                                                                        Padding="{TemplateBinding Padding}">
+                                                                    <TextBlock Text="{Binding Description}" 
+                                                                               TextTrimming="CharacterEllipsis"
+                                                                               TextWrapping="NoWrap"
+                                                                               VerticalAlignment="Center"
+                                                                               HorizontalAlignment="Left"
+                                                                               Foreground="#616161"
+                                                                               FontSize="12"/>
+                                                                </Border>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#F5F5F5"/>
+                                                            <Setter Property="BorderBrush" Value="#2196F3"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsPressed" Value="True">
+                                                            <Setter Property="Background" Value="#EEEEEE"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="Ár (HUF)" Binding="{Binding Price}" Width="95" IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                        <Setter Property="Margin" Value="8,0,12,0"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
+                                        <Setter Property="FontSize" Value="13"/>
+                                        <Setter Property="Foreground" Value="#2E7D32"/>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            
+                            <!-- Allergens Column -->
+                            <DataGridTemplateColumn Header="Allergének" Width="155">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                                                      HorizontalScrollBarVisibility="Disabled" 
+                                                      MaxHeight="50"
+                                                      Margin="2">
+                                            <ItemsControl ItemsSource="{Binding Allergens}" Margin="4,2">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel Orientation="Horizontal"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Border Background="#FFF3E0" BorderBrush="#FFB74D" BorderThickness="1" 
+                                                                CornerRadius="10" Padding="6,3" Margin="2">
+                                                            <TextBlock Text="{Binding Name}" FontSize="10" 
+                                                                       Foreground="#E65100" FontWeight="SemiBold"/>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            
+                            <DataGridTemplateColumn Header="Műveletek" Width="165">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Button x:Name="EditButton" 
+                                                    Width="75" Height="34" 
+                                                    FontSize="12" 
+                                                    FontWeight="SemiBold" 
+                                                    Content="Szerk." 
+                                                    Cursor="Hand" 
+                                                    Margin="0,0,6,0"
+                                                    BorderThickness="0"
+                                                    Foreground="White">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="#2196F3"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="{TemplateBinding Background}" 
+                                                                            CornerRadius="3"
+                                                                            BorderThickness="0">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="#1976D2"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsPressed" Value="True">
+                                                                <Setter Property="Background" Value="#1565C0"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                            <Button x:Name="DeleteButton" 
+                                                    Width="70" Height="34" 
+                                                    FontSize="12" 
+                                                    FontWeight="SemiBold" 
+                                                    Content="Törlés" 
+                                                    Cursor="Hand"
+                                                    Click="DeleteButton_Click"
+                                                    BorderThickness="0"
+                                                    Foreground="White">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Setter Property="Background" Value="#F44336"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border Background="{TemplateBinding Background}" 
+                                                                            CornerRadius="3"
+                                                                            BorderThickness="0">
+                                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                    </Border>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                        <Style.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter Property="Background" Value="#D32F2F"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsPressed" Value="True">
+                                                                <Setter Property="Background" Value="#C62828"/>
+                                                            </Trigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -125,5 +479,70 @@
                 </Grid>
             </Border>
         </Grid>
+
+        <!-- Description Panel (appears when clicking description) -->
+        <Border Grid.Row="2" x:Name="DescriptionPanel" Background="White" 
+                BorderThickness="0,1,0,0" BorderBrush="#CCCCCC" 
+                Padding="20,15" Margin="20,0,20,15" CornerRadius="0,0,8,8"
+                Visibility="Collapsed">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header with Close Button -->
+                <Grid Grid.Row="0" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" x:Name="DescriptionTitleTextBlock" 
+                               Text="Leírás" FontSize="18" FontWeight="Bold" 
+                               Foreground="#333333" VerticalAlignment="Center"/>
+                    <Button Grid.Column="1" x:Name="CloseDescriptionButton" 
+                            Width="28" Height="28" Content="✕" FontSize="14" 
+                            Background="#F5F5F5" Foreground="#666666"
+                            Click="CloseDescriptionButton_Click"
+                            Cursor="Hand" BorderThickness="0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#F5F5F5"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" 
+                                                    CornerRadius="4">
+                                                <ContentPresenter HorizontalAlignment="Center" 
+                                                                  VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#E0E0E0"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+
+                <!-- Separator -->
+                <Border Grid.Row="1" Height="1" Background="#E0E0E0" Margin="0,0,0,12"/>
+
+                <!-- Description Content -->
+                <ScrollViewer Grid.Row="2" MaxHeight="150" VerticalScrollBarVisibility="Auto">
+                    <TextBlock x:Name="DescriptionContentTextBlock" 
+                               Text="" FontSize="14" 
+                               Foreground="#424242" 
+                               TextWrapping="Wrap"
+                               LineHeight="22"
+                               Padding="4"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </Page>
