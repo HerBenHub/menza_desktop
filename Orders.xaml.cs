@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using menza_admin.Models;
 using Microsoft.Win32;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using Syncfusion.Pdf;
 using Syncfusion.Pdf.Grid;
 using Syncfusion.Pdf.Graphics;
 using Syncfusion.Drawing;
 using iTextSharp.text.pdf;
+using PdfPage = iTextSharp.text.pdf.PdfPage;
 using iTextSharp.text;
 
 namespace menza_admin
